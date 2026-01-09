@@ -28,6 +28,7 @@ typedef enum {
     TT_NUMBER,      /* <NUMBER> */
     TT_IDENT,       /* <IDENT> */
     TT_FN,          /* 'fn' */
+    TT_PUB,         /* 'pub' */
     TT_SEMI,        /* ';' */
     TT_VOID,        /* 'void' */
     TT_U8,          /* 'u8' */

@@ -108,6 +108,7 @@ begin_parse(struct gup_state *state, struct token *tok)
 {
     struct symbol *symbol;
     struct ast_node *root;
+    struct token *last_tok;
     symid_t sym_id;
     gup_type_t type;
 
@@ -132,6 +133,15 @@ begin_parse(struct gup_state *state, struct token *tok)
         if (sym_id < 0) {
             trace_error(state, "failed to create symbol for \"%s\"\n", tok->s);
             return -1;
+        }
+
+        /*
+         * If the token before the function was 'pub' then we shall
+         * mark this function as public.
+         */
+        last_tok = &state->last_token;
+        if (last_tok->type == TT_PUB) {
+            symbol->is_pub = 1;
         }
 
         if (parse_expect(state, tok, TT_MINUS) < 0) {
@@ -170,10 +180,13 @@ begin_parse(struct gup_state *state, struct token *tok)
         root->symbol = symbol;
         cg_compile_node(state, root);
         break;
+    case TT_PUB:
+        break;
     default:
-        return 0;
+        break;
     }
 
+    state->last_token = *tok;
     return 0;
 }
 

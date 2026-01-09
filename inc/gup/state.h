@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "gup/ptrbox.h"
 #include "gup/symbol.h"
+#include "gup/token.h"
 
 #define ASMOUT_DEFAULT "gupgen.asm"
 
@@ -19,6 +20,7 @@
  * @in_fd: Input file pointer
  * @putback: Putback buffer ('\0' if empty)
  * @line_num: Line number
+ * @last_token: Previous token encountered
  * @ptrbox: Parser pointer box
  * @ast_ptrbox: Pointer box for AST
  * @g_symtab: Global symbol table
@@ -28,6 +30,7 @@ struct gup_state {
     int in_fd;
     char putback;
     size_t line_num;
+    struct token last_token;
     struct ptrbox ptrbox;
     struct ptrbox ast_ptrbox;
     struct symbol_table g_symtab;
