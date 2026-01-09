@@ -105,7 +105,7 @@ begin_parse(struct gup_state *state, struct token *tok)
 
         break;
     default:
-        return -1;
+        return 0;
     }
 
     return 0;
