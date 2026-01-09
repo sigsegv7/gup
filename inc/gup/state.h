@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "gup/ptrbox.h"
 
 /*
  * Represents the compiler state
@@ -15,11 +16,13 @@
  * @in_fd: Input file pointer
  * @putback: Putback buffer ('\0' if empty)
  * @line_num: Line number
+ * @ptrbox: Parser pointer box
  */
 struct gup_state {
     int in_fd;
     char putback;
     size_t line_num;
+    struct ptrbox ptrbox;
 };
 
 /*

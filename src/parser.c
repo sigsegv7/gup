@@ -9,6 +9,7 @@
 #include "gup/parser.h"
 #include "gup/lexer.h"
 #include "gup/parser.h"
+#include "gup/ptrbox.h"
 
 /*
  * Table used to convert token constants to string
@@ -33,9 +34,14 @@ int
 gup_parse(struct gup_state *state)
 {
     struct token token;
+    int error;
 
     if (state == NULL) {
         errno = -EINVAL;
+        return -1;
+    }
+
+    if ((error = ptrbox_init(&state->ptrbox)) < 0) {
         return -1;
     }
 
@@ -43,5 +49,6 @@ gup_parse(struct gup_state *state)
         printf("got token: %s\n", toktab[token.type]);
     }
 
+    ptrbox_destroy(&state->ptrbox);
     return 0;
 }
