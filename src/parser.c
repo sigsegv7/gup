@@ -34,7 +34,11 @@ static const char *toktab[] = {
     [TT_NUMBER]     = "NUMBER",
     [TT_IDENT]      = "IDENTIFIER",
     [TT_FN]         = "FUNCTION",
-    [TT_SEMI]       = "SEMICOLON"
+    [TT_SEMI]       = "SEMICOLON",
+    [TT_U8]         = "U8",
+    [TT_U16]        = "U16",
+    [TT_U32]        = "U32",
+    [TT_U64]        = "U64"
 };
 
 /*
