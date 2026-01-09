@@ -100,6 +100,7 @@ lexer_scan_ident(struct gup_state *state, int lc, struct token *res)
     for (;;) {
         c = lexer_nom(state, true);
         if (!isalnum(c) && c != '_') {
+            state->putback = c;
             buf[buf_i] = '\0';
             break;
         }
