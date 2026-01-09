@@ -1,0 +1,12 @@
+//
+// Functions are not required to have a pair of parentheses
+// after the identifier. The return type is after the '->'
+//
+fn main -> u8
+{
+    if (cond) {
+        // ...
+    }
+
+    return 0;
+}
