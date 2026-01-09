@@ -35,6 +35,7 @@ typedef enum {
     TT_U16,         /* 'u16' */
     TT_U32,         /* 'u32' */
     TT_U64,         /* 'u64' */
+    TT_STRING,      /* <STRING> */
 } tt_t;
 
 /*

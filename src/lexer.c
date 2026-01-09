@@ -160,6 +160,65 @@ lexer_scan_digits(struct gup_state *state, int lc, struct token *res)
 }
 
 /*
+ * Scan for a string in the source input
+ *
+ * @state: Compiler state
+ * @res: Token result
+ *
+ * Returns zero on success
+ */
+static int
+lexer_scan_str(struct gup_state *state, struct token *res)
+{
+    char *buf;
+    size_t buf_size, buf_cap;
+    int c;
+
+    if (state == NULL || res == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    buf_size = 0;
+    buf_cap = 8;
+    if ((buf = malloc(buf_cap)) == NULL) {
+        errno = -ENOMEM;
+        return -1;
+    }
+
+    for (;;) {
+        c = lexer_nom(state, true);
+        if (c == '\0') {
+            trace_error(state, "got unexpected end of file\n");
+            trace_warn("unterminated string?\n");
+            free(buf);
+            return -1;
+        }
+
+        if (c == '"') {
+            buf[buf_size] = '\0';
+            break;
+        }
+
+        buf[buf_size++] = c;
+        if (buf_size >= buf_cap - 1) {
+            buf_cap += 8;
+            buf = realloc(buf, buf_cap);
+        }
+
+        if (buf == NULL) {
+            trace_error(state, "out of memory\n");
+            return -1;
+        }
+    }
+
+    res->type = TT_STRING;
+    res->s = ptrbox_strdup(&state->ptrbox, buf);
+    free(buf);
+    return 0;
+}
+
+/*
  * Check if a token is actually a keyword rather than an
  * identifier
  *
@@ -296,6 +355,15 @@ lexer_scan(struct gup_state *state, struct token *res)
         res->c = c;
         return 0;
     default:
+        /*
+         * If we simply have a quote, it is assumed to be a
+         * string.
+         */
+        if (c == '"') {
+            if (lexer_scan_str(state, res) == 0)
+                return 0;
+        }
+
         /* Are these digits? */
         if (lexer_scan_digits(state, c, res) == 0) {
             return 0;
