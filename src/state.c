@@ -26,6 +26,10 @@ gup_open(const char *path, struct gup_state *res)
     }
 
     res->line_num = 1;
+    if ((res->out_fp = fopen(ASMOUT_DEFAULT, "w")) == NULL) {
+        close(res->in_fd);
+        return -1;
+    }
     return 0;
 }
 
@@ -37,4 +41,5 @@ gup_close(struct gup_state *state)
     }
 
     close(state->in_fd);
+    fclose(state->out_fp);
 }

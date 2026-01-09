@@ -1,9 +1,9 @@
-CFILES = $(shell find . -name "*.c")
+include mk/defaults.mk
+
+CFILES = $(shell find . -name "*.c" | grep -v "src/arch")
+CFILES += src/arch/$(ARCH).c
 OFILES = $(CFILES:.c=.o)
 DFILES = $(CFILES:.c=.d)
-
-CC = gcc
-CFLAGS = -Wall -pedantic -MMD -Iinc/
 
 .PHONY: all
 all: $(OFILES)

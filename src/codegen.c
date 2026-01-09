@@ -8,6 +8,7 @@
 #include "gup/trace.h"
 #include "gup/codegen.h"
 #include "gup/symbol.h"
+#include "gup/mu.h"
 
 int
 cg_compile_node(struct gup_state *state, struct ast_node *node)
@@ -28,6 +29,7 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         }
 
         trace_debug("[AST] detected function %s\n", symbol->name);
+        mu_cg_funcp(state, symbol->name, symbol->is_pub);
         break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);

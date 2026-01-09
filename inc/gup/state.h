@@ -11,6 +11,8 @@
 #include "gup/ptrbox.h"
 #include "gup/symbol.h"
 
+#define ASMOUT_DEFAULT "gupgen.asm"
+
 /*
  * Represents the compiler state
  *
@@ -20,6 +22,7 @@
  * @ptrbox: Parser pointer box
  * @ast_ptrbox: Pointer box for AST
  * @g_symtab: Global symbol table
+ * @out_fp: Output file pointer
  */
 struct gup_state {
     int in_fd;
@@ -28,6 +31,7 @@ struct gup_state {
     struct ptrbox ptrbox;
     struct ptrbox ast_ptrbox;
     struct symbol_table g_symtab;
+    FILE *out_fp;
 };
 
 /*
