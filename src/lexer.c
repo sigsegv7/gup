@@ -36,6 +36,7 @@ static char
 lexer_nom(struct gup_state *state, bool allow_ws)
 {
     char c = '\0';
+    ssize_t len;
 
     if (state == NULL) {
         return '\0';
@@ -52,10 +53,9 @@ lexer_nom(struct gup_state *state, bool allow_ws)
             return c;
     }
 
-    while (read(state->in_fd, &c, 1) > 0) {
+    while ((len = read(state->in_fd, &c, 1)) > 0) {
         if (c == '\n') {
             ++state->line_num;
-            continue;
         }
 
         /*
@@ -73,6 +73,10 @@ lexer_nom(struct gup_state *state, bool allow_ws)
         if (!is_whitespace(c)) {
             break;
         }
+    }
+
+    if (len == 0) {
+        c = '\0';
     }
 
     return c;
