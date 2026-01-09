@@ -49,7 +49,10 @@ ptrbox_destroy(struct ptrbox *ptrbox)
         return;
     }
 
-    entry = TAILQ_FIRST(&ptrbox->entries);
+    if ((entry = TAILQ_FIRST(&ptrbox->entries)) == NULL) {
+        return;
+    }
+
     do {
         TAILQ_REMOVE(&ptrbox->entries, entry, link);
         free(entry->data);
