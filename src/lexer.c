@@ -255,6 +255,10 @@ lexer_scan(struct gup_state *state, struct token *res)
 
         res->type = TT_GTE;
         return 0;
+    case ';':
+        res->type = TT_SEMI;
+        res->c = c;
+        return 0;
     default:
         /* Are these digits? */
         if (lexer_scan_digits(state, c, res) == 0) {
