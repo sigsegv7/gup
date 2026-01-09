@@ -22,7 +22,9 @@ typedef enum {
     TT_EQUALS,      /* '=' */
     TT_EQUALITY,    /* '==' */
     TT_LT,          /* '<' */
+    TT_LTE,         /* '<=' */
     TT_GT,          /* '>' */
+    TT_GTE,         /* '>=' */
 } tt_t;
 
 /*
