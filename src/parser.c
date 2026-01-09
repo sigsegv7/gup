@@ -34,6 +34,83 @@ static const char *toktab[] = {
     [TT_SEMI]       = "SEMICOLON"
 };
 
+/*
+ * Assert that the next token is of a specific kind
+ *
+ * @state: Compiler state
+ * @tok:   Token result
+ * @what:  Token type to assert
+ */
+static int
+parse_expect(struct gup_state *state, struct token *tok, tt_t what)
+{
+    if (state == NULL || tok == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    if (lexer_scan(state, tok) < 0) {
+        trace_error(
+            state,
+            "got unexpected end of file, expected %s\n",
+            toktab[what]
+        );
+        return -1;
+    }
+
+    if (tok->type != what) {
+        trace_error(
+            state,
+            "expected %s, got %s instead\n",
+            toktab[what],
+            toktab[tok->type]
+        );
+
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+begin_parse(struct gup_state *state, struct token *tok)
+{
+    if (state == NULL || tok == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    switch (tok->type) {
+    case TT_FN:
+        if (parse_expect(state, tok, TT_IDENT) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_MINUS) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_GT) < 0) {
+            return -1;
+        }
+
+        /* TODO: This should be a type */
+        if (parse_expect(state, tok, TT_IDENT) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_SEMI) < 0) {
+            return -1;
+        }
+
+        break;
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
 int
 gup_parse(struct gup_state *state)
 {
@@ -55,6 +132,9 @@ gup_parse(struct gup_state *state)
 
     while (lexer_scan(state, &token) == 0) {
         trace_debug("got token: %s\n", toktab[token.type]);
+        if (begin_parse(state, &token) < 0) {
+            break;
+        }
     }
 
     ptrbox_destroy(&state->ast_ptrbox);
