@@ -11,6 +11,8 @@
 #include "gup/state.h"
 #include "gup/token.h"
 
+#define MAX_IDENT_LEN 256
+
 /*
  * Scan a single token and discard any whitespace
  *

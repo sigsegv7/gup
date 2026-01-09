@@ -26,6 +26,7 @@ typedef enum {
     TT_GT,          /* '>' */
     TT_GTE,         /* '>=' */
     TT_NUMBER,      /* <NUMBER> */
+    TT_IDENT,       /* <IDENT> */
 } tt_t;
 
 /*
@@ -38,6 +39,7 @@ struct token {
     union {
         char c;
         size_t v;
+        char *s;
     };
 };
 

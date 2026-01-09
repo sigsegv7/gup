@@ -86,6 +86,37 @@ lexer_nom(struct gup_state *state, bool allow_ws)
 }
 
 static int
+lexer_scan_ident(struct gup_state *state, int lc, struct token *res)
+{
+    char buf[MAX_IDENT_LEN];
+    size_t buf_i = 0;
+    int c;
+
+    if (!isalpha(lc) && lc != '_') {
+        return -1;
+    }
+
+    buf[buf_i++] = lc;
+    for (;;) {
+        c = lexer_nom(state, true);
+        if (!isalnum(c) && c != '_') {
+            buf[buf_i] = '\0';
+            break;
+        }
+
+        buf[buf_i++] = c;
+        if (buf_i >= sizeof(buf) - 1) {
+            buf[buf_i] = '\0';
+            break;
+        }
+    }
+
+    res->type = TT_IDENT;
+    res->s = ptrbox_strdup(&state->ptrbox, buf);
+    return 0;
+}
+
+static int
 lexer_scan_digits(struct gup_state *state, int lc, struct token *res)
 {
     char buf[21];
@@ -189,6 +220,11 @@ lexer_scan(struct gup_state *state, struct token *res)
     default:
         /* Are these digits? */
         if (lexer_scan_digits(state, c, res) == 0) {
+            return 0;
+        }
+
+        /* An identifier? */
+        if (lexer_scan_ident(state, c, res) == 0) {
             return 0;
         }
 
