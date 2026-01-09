@@ -31,6 +31,7 @@ typedef enum {
  * @name: Symbol name (strdup'd)
  * @type: Symbol type
  * @data_type: Data type of symbol
+ * @is_pub: If set, is public
  * @link: Queue link
  */
 struct symbol {
@@ -38,6 +39,7 @@ struct symbol {
     symtype_t type;
     gup_type_t data_type;
     symid_t id;
+    uint8_t is_pub : 1;
     TAILQ_ENTRY(symbol) link;
 };
 
