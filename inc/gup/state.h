@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "gup/ptrbox.h"
+#include "gup/symbol.h"
 
 /*
  * Represents the compiler state
@@ -18,6 +19,7 @@
  * @line_num: Line number
  * @ptrbox: Parser pointer box
  * @ast_ptrbox: Pointer box for AST
+ * @g_symtab: Global symbol table
  */
 struct gup_state {
     int in_fd;
@@ -25,6 +27,7 @@ struct gup_state {
     size_t line_num;
     struct ptrbox ptrbox;
     struct ptrbox ast_ptrbox;
+    struct symbol_table g_symtab;
 };
 
 /*

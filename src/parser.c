@@ -131,6 +131,12 @@ gup_parse(struct gup_state *state)
         return -1;
     }
 
+    if (symbol_table_init(&state->g_symtab) < 0) {
+        ptrbox_destroy(&state->ast_ptrbox);
+        ptrbox_destroy(&state->ptrbox);
+        return -1;
+    }
+
     while (lexer_scan(state, &token) == 0) {
         trace_debug("got token: %s\n", toktab[token.type]);
         if (begin_parse(state, &token) < 0) {
@@ -138,6 +144,7 @@ gup_parse(struct gup_state *state)
         }
     }
 
+    symbol_table_destroy(&state->g_symtab);
     ptrbox_destroy(&state->ast_ptrbox);
     ptrbox_destroy(&state->ptrbox);
     return 0;
