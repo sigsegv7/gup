@@ -127,6 +127,7 @@ gup_parse(struct gup_state *state)
     }
 
     if ((error = ptrbox_init(&state->ast_ptrbox)) < 0) {
+        ptrbox_destroy(&state->ptrbox);
         return -1;
     }
 
