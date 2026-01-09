@@ -6,12 +6,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
+#include "gup/codegen.h"
 #include "gup/parser.h"
 #include "gup/lexer.h"
 #include "gup/parser.h"
 #include "gup/ptrbox.h"
 #include "gup/trace.h"
 #include "gup/types.h"
+#include "gup/ast.h"
 
 /*
  * Table used to convert token constants to string
@@ -100,6 +102,9 @@ parse_expect(struct gup_state *state, struct token *tok, tt_t what)
 static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
+    struct symbol *symbol;
+    struct ast_node *root;
+    symid_t sym_id;
     gup_type_t type;
 
     if (state == NULL || tok == NULL) {
@@ -110,6 +115,18 @@ begin_parse(struct gup_state *state, struct token *tok)
     switch (tok->type) {
     case TT_FN:
         if (parse_expect(state, tok, TT_IDENT) < 0) {
+            return -1;
+        }
+
+        sym_id = symbol_new(
+            &state->g_symtab,
+            tok->s,
+            SYMBOL_TYPE_FUNC,
+            &symbol
+        );
+
+        if (sym_id < 0) {
+            trace_error(state, "failed to create symbol for \"%s\"\n", tok->s);
             return -1;
         }
 
@@ -140,6 +157,14 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
 
+        symbol->data_type = type;
+        if (ast_node_alloc(state, AST_OP_FUNC, &root) < 0) {
+            trace_error(state, "failed to allocate ast node for function\n");
+            return -1;
+        }
+
+        root->symbol = symbol;
+        cg_compile_node(state, root);
         break;
     default:
         return 0;
