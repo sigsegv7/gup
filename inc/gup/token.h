@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2026, Ian Moffett.
+ * Provided under the BSD-3 clause.
+ */
+
+#ifndef GUP_TOKEN_H
+#define GUP_TOKEN_H 1
+
+#include <stdint.h>
+#include <stddef.h>
+
+/*
+ * Represents valid token types, these are constants
+ * that are quick to compare.
+ */
+typedef enum {
+    TT_NONE,        /* <NONE> */
+    TT_PLUS,        /* '+' */
+    TT_MINUS,       /* '-' */
+    TT_SLASH,       /* '/' */
+    TT_STAR,        /* '*' */
+    TT_EQUALS,      /* '=' */
+    TT_LT,          /* '<' */
+    TT_GT,          /* '>' */
+} tt_t;
+
+/*
+ * Represents a single lexical token
+ *
+ * @type: Token type
+ */
+struct token {
+    tt_t type;
+    union {
+        char c;
+    };
+};
+
+#endif  /* !GUP_TOKEN_H */
