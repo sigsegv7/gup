@@ -39,6 +39,7 @@ symid_t symbol_new(struct symbol_table *tbl, const char *name, symtype_t type,
     }
 
     symbol->type = type;
+    symbol->data_type = GUP_TYPE_VOID;
     symbol->id = tbl->symbol_count++;
     TAILQ_INSERT_TAIL(&tbl->symbols, symbol, link);
     if (res != NULL) {

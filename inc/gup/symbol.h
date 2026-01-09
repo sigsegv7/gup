@@ -9,6 +9,8 @@
 #include <sys/queue.h>
 #include <stdint.h>
 #include <stddef.h>
+#include "gup/symbol.h"
+#include "gup/types.h"
 
 typedef int32_t symid_t;
 
@@ -28,11 +30,13 @@ typedef enum {
  *
  * @name: Symbol name (strdup'd)
  * @type: Symbol type
+ * @data_type: Data type of symbol
  * @link: Queue link
  */
 struct symbol {
     char *name;
     symtype_t type;
+    gup_type_t data_type;
     symid_t id;
     TAILQ_ENTRY(symbol) link;
 };
