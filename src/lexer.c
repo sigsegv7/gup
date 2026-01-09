@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <string.h>
 #include "gup/lexer.h"
 #include "gup/trace.h"
 
@@ -158,6 +159,42 @@ lexer_scan_digits(struct gup_state *state, int lc, struct token *res)
     return 0;
 }
 
+/*
+ * Check if a token is actually a keyword rather than an
+ * identifier
+ *
+ * @state: Compiler state
+ * @tok: Token to check
+ */
+static int
+lexer_check_kw(struct gup_state *state, struct token *tok)
+{
+    if (state == NULL || tok == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    /*
+     * We only want to see if an identifier is actually a keyword,
+     * this will not work with any other kind of token.
+     */
+    if (tok->type != TT_IDENT) {
+        return -1;
+    }
+
+    switch (*tok->s) {
+    case 'f':
+        if (strcmp(tok->s, "fn") == 0) {
+            tok->type = TT_FN;
+            return 0;
+        }
+
+        break;
+    }
+
+    return -1;
+}
+
 int
 lexer_scan(struct gup_state *state, struct token *res)
 {
@@ -226,6 +263,7 @@ lexer_scan(struct gup_state *state, struct token *res)
 
         /* An identifier? */
         if (lexer_scan_ident(state, c, res) == 0) {
+            lexer_check_kw(state, res);
             return 0;
         }
 

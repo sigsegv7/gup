@@ -27,6 +27,7 @@ typedef enum {
     TT_GTE,         /* '>=' */
     TT_NUMBER,      /* <NUMBER> */
     TT_IDENT,       /* <IDENT> */
+    TT_FN,          /* 'fn' */
 } tt_t;
 
 /*

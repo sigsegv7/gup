@@ -28,7 +28,8 @@ static const char *toktab[] = {
     [TT_GT]         = "GREATER-THAN",
     [TT_GTE]        = "GREATER-THAN-OR-EQUALS",
     [TT_NUMBER]     = "NUMBER",
-    [TT_IDENT]      = "IDENTIFIER"
+    [TT_IDENT]      = "IDENTIFIER",
+    [TT_FN]         = "FUNCTION"
 };
 
 int
