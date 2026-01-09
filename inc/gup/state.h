@@ -17,12 +17,14 @@
  * @putback: Putback buffer ('\0' if empty)
  * @line_num: Line number
  * @ptrbox: Parser pointer box
+ * @ast_ptrbox: Pointer box for AST
  */
 struct gup_state {
     int in_fd;
     char putback;
     size_t line_num;
     struct ptrbox ptrbox;
+    struct ptrbox ast_ptrbox;
 };
 
 /*

@@ -46,10 +46,15 @@ gup_parse(struct gup_state *state)
         return -1;
     }
 
+    if ((error = ptrbox_init(&state->ast_ptrbox)) < 0) {
+        return -1;
+    }
+
     while (lexer_scan(state, &token) == 0) {
         printf("got token: %s\n", toktab[token.type]);
     }
 
+    ptrbox_destroy(&state->ast_ptrbox);
     ptrbox_destroy(&state->ptrbox);
     return 0;
 }
