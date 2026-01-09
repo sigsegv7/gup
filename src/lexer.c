@@ -1,9 +1,12 @@
 #include <stdint.h>
+#include <ctype.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <errno.h>
 #include "gup/lexer.h"
+#include "gup/trace.h"
 
 /*
  * Returns true if the input character 'c' is a whitespace
@@ -82,6 +85,47 @@ lexer_nom(struct gup_state *state, bool allow_ws)
     return c;
 }
 
+static int
+lexer_scan_digits(struct gup_state *state, int lc, struct token *res)
+{
+    char buf[21];
+    uint8_t buf_i = 0;
+    int c;
+
+    if (state == NULL || res == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    if (!isdigit(lc)) {
+        return -1;
+    }
+
+    buf[buf_i++] = lc;
+    for (;;) {
+        /*
+         * Consume a single character from the input, if it
+         * is not a digit, put it back.
+         */
+        c = lexer_nom(state, false);
+        if (!isdigit(c)) {
+            state->putback = c;
+            buf[buf_i] = '\0';
+            break;
+        }
+
+        buf[buf_i++] = c;
+        if (buf_i >= sizeof(buf) - 1) {
+            buf[buf_i] = '\0';
+            break;
+        }
+    }
+
+    res->type = TT_NUMBER;
+    res->v = atoi(buf);
+    return 0;
+}
+
 int
 lexer_scan(struct gup_state *state, struct token *res)
 {
@@ -142,6 +186,14 @@ lexer_scan(struct gup_state *state, struct token *res)
 
         res->type = TT_GTE;
         return 0;
+    default:
+        /* Are these digits? */
+        if (lexer_scan_digits(state, c, res) == 0) {
+            return 0;
+        }
+
+        trace_error(state, "bad token '%c'\n", c);
+        return -1;
     }
 
     return -1;
