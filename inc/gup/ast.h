@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "gup/state.h"
+#include "gup/symbol.h"
 
 /*
  * Represents valid AST node types
@@ -28,11 +29,13 @@ typedef enum {
  * @type: AST node type
  * @left: Left leaf
  * @right: Right leaf
+ * @symbol: Symbol this node refers to
  */
 struct ast_node {
     ast_op_t type;
     struct ast_node *left;
     struct ast_node *right;
+    struct symbol *symbol;
 };
 
 /*
