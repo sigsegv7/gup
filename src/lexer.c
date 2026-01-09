@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026, Ian Moffett.
+ * Provided under the BSD-3 clause.
+ */
+
 #include <stdint.h>
 #include <ctype.h>
 #include <stddef.h>
