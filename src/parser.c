@@ -10,6 +10,7 @@
 #include "gup/lexer.h"
 #include "gup/parser.h"
 #include "gup/ptrbox.h"
+#include "gup/trace.h"
 
 /*
  * Table used to convert token constants to string
@@ -52,7 +53,7 @@ gup_parse(struct gup_state *state)
     }
 
     while (lexer_scan(state, &token) == 0) {
-        printf("got token: %s\n", toktab[token.type]);
+        trace_debug("got token: %s\n", toktab[token.type]);
     }
 
     ptrbox_destroy(&state->ast_ptrbox);
