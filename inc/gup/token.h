@@ -20,6 +20,7 @@ typedef enum {
     TT_SLASH,       /* '/' */
     TT_STAR,        /* '*' */
     TT_EQUALS,      /* '=' */
+    TT_EQUALITY,    /* '==' */
     TT_LT,          /* '<' */
     TT_GT,          /* '>' */
 } tt_t;

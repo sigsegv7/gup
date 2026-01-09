@@ -15,14 +15,15 @@
  * literals.
  */
 static const char *toktab[] = {
-    [TT_NONE]   = "NONE",
-    [TT_PLUS]   = "PLUS",
-    [TT_MINUS]  = "MINUS",
-    [TT_SLASH]  = "SLASH",
-    [TT_STAR]   = "STAR",
-    [TT_EQUALS] = "EQUALS",
-    [TT_LT]     = "LESS-THAN",
-    [TT_GT]     = "GREATER-THAN"
+    [TT_NONE]       = "NONE",
+    [TT_PLUS]       = "PLUS",
+    [TT_MINUS]      = "MINUS",
+    [TT_SLASH]      = "SLASH",
+    [TT_STAR]       = "STAR",
+    [TT_EQUALS]     = "EQUALS",
+    [TT_EQUALITY]   = "EQAULITY",
+    [TT_LT]         = "LESS-THAN",
+    [TT_GT]         = "GREATER-THAN"
 };
 
 int

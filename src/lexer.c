@@ -112,6 +112,11 @@ lexer_scan(struct gup_state *state, struct token *res)
     case '=':
         res->type = TT_EQUALS;
         res->c = c;
+        if ((c = lexer_nom(state, false)) != '=') {
+            state->putback = c;
+            return 0;
+        }
+        res->type = TT_EQUALITY;
         return 0;
     case '<':
         res->type = TT_LT;
