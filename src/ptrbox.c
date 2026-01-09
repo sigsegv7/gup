@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #include "gup/ptrbox.h"
 
 int
@@ -31,6 +32,29 @@ ptrbox_alloc(struct ptrbox *ptrbox, size_t sz)
     }
 
     if ((entry->data = malloc(sz)) == NULL) {
+        free(entry);
+        return NULL;
+    }
+
+    TAILQ_INSERT_TAIL(&ptrbox->entries, entry, link);
+    ++ptrbox->entry_count;
+    return entry->data;
+}
+
+void *
+ptrbox_strdup(struct ptrbox *ptrbox, const char *s)
+{
+    struct ptrbox_entry *entry;
+
+    if (ptrbox == NULL || s == 0) {
+        return NULL;
+    }
+
+    if ((entry = malloc(sizeof(*entry))) == NULL) {
+        return NULL;
+    }
+
+    if ((entry->data = strdup(s)) == NULL) {
         free(entry);
         return NULL;
     }

@@ -45,6 +45,17 @@ struct ptrbox {
 void *ptrbox_alloc(struct ptrbox *ptrbox, size_t sz);
 
 /*
+ * Perform a strdup() operation and save the reference in
+ * a pointer box
+ *
+ * @ptrbox: Ptrbox to save reference within
+ * @s: String to dup
+ *
+ * Returns dupped string on success
+ */
+void *ptrbox_strdup(struct ptrbox *ptrbox, const char *s);
+
+/*
  * Destroy a pointer box
  *
  * @ptrbox: Pointer box to destory
