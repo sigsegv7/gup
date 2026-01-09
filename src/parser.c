@@ -11,6 +11,7 @@
 #include "gup/parser.h"
 #include "gup/ptrbox.h"
 #include "gup/trace.h"
+#include "gup/types.h"
 
 /*
  * Table used to convert token constants to string
@@ -33,6 +34,22 @@ static const char *toktab[] = {
     [TT_FN]         = "FUNCTION",
     [TT_SEMI]       = "SEMICOLON"
 };
+
+/*
+ * Convert a type specific token into a type constant
+ *
+ * @tok: Token to convert
+ */
+static inline gup_type_t
+token_to_type(tt_t tok)
+{
+    switch (tok) {
+    case TT_VOID:
+        return GUP_TYPE_VOID;
+    default:
+        return GUP_TYPE_BAD;
+    }
+}
 
 /*
  * Assert that the next token is of a specific kind
@@ -75,6 +92,8 @@ parse_expect(struct gup_state *state, struct token *tok, tt_t what)
 static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
+    gup_type_t type;
+
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
         return -1;
@@ -94,8 +113,18 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
 
-        /* TODO: This should be a type */
-        if (parse_expect(state, tok, TT_IDENT) < 0) {
+        if (lexer_scan(state, tok) < 0) {
+            trace_error(state, "expected TYPE after '->'\n");
+            return -1;
+        }
+
+        type = token_to_type(tok->type);
+        if (type == GUP_TYPE_BAD) {
+            trace_error(
+                state,
+                "expected TYPE after '->', got %s\n",
+                toktab[tok->type]
+            );
             return -1;
         }
 

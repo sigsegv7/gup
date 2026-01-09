@@ -29,6 +29,7 @@ typedef enum {
     TT_IDENT,       /* <IDENT> */
     TT_FN,          /* 'fn' */
     TT_SEMI,        /* ';' */
+    TT_VOID,        /* 'void' */
 } tt_t;
 
 /*
