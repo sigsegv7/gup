@@ -14,9 +14,11 @@
  * Represents valid AST node types
  *
  * @AST_OP_NONE: No type
+ * @AST_OP_FUNC: Is a function
  */
 typedef enum {
     AST_OP_NONE,
+    AST_OP_FUNC
 } ast_op_t;
 
 /*
