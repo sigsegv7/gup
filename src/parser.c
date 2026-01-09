@@ -46,6 +46,14 @@ token_to_type(tt_t tok)
     switch (tok) {
     case TT_VOID:
         return GUP_TYPE_VOID;
+    case TT_U8:
+        return GUP_TYPE_U8;
+    case TT_U16:
+        return GUP_TYPE_U16;
+    case TT_U32:
+        return GUP_TYPE_U32;
+    case TT_U64:
+        return GUP_TYPE_U64;
     default:
         return GUP_TYPE_BAD;
     }

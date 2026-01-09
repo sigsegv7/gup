@@ -30,6 +30,10 @@ typedef enum {
     TT_FN,          /* 'fn' */
     TT_SEMI,        /* ';' */
     TT_VOID,        /* 'void' */
+    TT_U8,          /* 'u8' */
+    TT_U16,         /* 'u16' */
+    TT_U32,         /* 'u32' */
+    TT_U64,         /* 'u64' */
 } tt_t;
 
 /*
