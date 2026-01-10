@@ -55,4 +55,12 @@ int mu_cg_retimm(struct gup_state *state, regsize_t regsize, ssize_t imm);
  */
 int mu_cg_retvoid(struct gup_state *state);
 
+/*
+ * Emit a call to a function symbol
+ *
+ * @state: Compiler state
+ * @label: Label to call
+ */
+int mu_cg_call(struct gup_state *state, const char *label);
+
 #endif  /* !GUP_MU_H */

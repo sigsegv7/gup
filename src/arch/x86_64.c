@@ -90,3 +90,20 @@ mu_cg_retvoid(struct gup_state *state)
 
     return 0;
 }
+
+int
+mu_cg_call(struct gup_state *state, const char *label)
+{
+    if (state == NULL || label == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\tcall %s\n",
+        label
+    );
+
+    return 0;
+}
