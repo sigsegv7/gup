@@ -352,6 +352,18 @@ parse_struct(struct gup_state *state, struct token *tok)
             return -1;
         }
 
+        /* Create a symbol for the instance */
+        sym_id = symbol_new(
+            &state->g_symtab,
+            instance_name,
+            SYMBOL_TYPE_STRUCT,
+            &symbol
+        );
+
+        if (sym_id < 0) {
+            return -1;
+        }
+
         root->right = symbol->tree;
         root->str = instance_name;
         cg_compile_node(state, root);
@@ -481,6 +493,100 @@ parse_func_call(struct gup_state *state, struct symbol *symbol, struct token *to
 }
 
 static int
+parse_struct_access(struct gup_state *state, struct symbol *parent, struct token *tok)
+{
+    struct ast_node *root, *cur;
+
+    if (state == NULL || tok == NULL) {
+        return -1;
+    }
+
+    if (ast_node_alloc(state, AST_OP_ASSIGN, &root) < 0) {
+        return -1;
+    }
+
+    if (ast_node_alloc(state, AST_OP_VAR, &root->left) < 0) {
+        return -1;
+    }
+
+    cur = root->left;
+    cur->str = ptrbox_strdup(&state->ptrbox, parent->name);
+    if (cur->str == NULL) {
+        return -1;
+    }
+
+    if (ast_node_alloc(state, AST_OP_VAR, &cur->left) < 0) {
+        return -1;
+    }
+
+    cur = cur->left;
+    for (;;) {
+        if (parse_expect(state, tok, TT_IDENT) < 0) {
+            return -1;
+        }
+
+        cur->str = ptrbox_strdup(&state->ptrbox, tok->s);
+        if (cur->str == NULL) {
+            return -1;
+        }
+
+        if (lexer_scan(state, tok) < 0) {
+            trace_error(state, "unexpected end of file\n");
+            return -1;
+        }
+
+        /* Should we keep grabbing fields? */
+        if (tok->type == TT_DOT) {
+            if (lexer_scan(state, tok) < 0) {
+                trace_error(state, "unexpected end of file\n");
+                return -1;
+            }
+
+            if (ast_node_alloc(state, AST_OP_VAR, &cur->left) < 0) {
+                return -1;
+            }
+
+            cur = cur->left;
+        }
+
+        if (tok->type != TT_DOT) {
+            break;
+        }
+    }
+
+    if (tok->type != TT_EQUALS) {
+        trace_error(state, "expected EQUALS, got %s\n", toktab[tok->type]);
+        return -1;
+    }
+
+    if (lexer_scan(state, tok) < 0) {
+        trace_error(state, "unexpected end of file\n");
+        return -1;
+    }
+
+    switch (tok->type) {
+    case TT_NUMBER:
+        if (ast_node_alloc(state, AST_OP_NUMBER, &root->right) < 0) {
+            return -1;
+        }
+
+        cur = root->right;
+        cur->v = tok->v;
+        break;
+    default:
+        trace_error(state, "got unexpected token %s\n", toktab[tok->type]);
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_SEMI) < 0) {
+        return -1;
+    }
+
+    cg_compile_node(state, root);
+    return 0;
+}
+
+static int
 parse_ident(struct gup_state *state, struct token *tok)
 {
     struct symbol *symbol;
@@ -493,7 +599,7 @@ parse_ident(struct gup_state *state, struct token *tok)
     if (symbol == NULL) {
         trace_error(
             state,
-            "implicit declaration of function \"%s\"\n",
+            "implicit declaration of symbol \"%s\"\n",
             tok->s
         );
 
@@ -508,6 +614,11 @@ parse_ident(struct gup_state *state, struct token *tok)
     switch (tok->type) {
     case TT_LPAREN:
         if (parse_func_call(state, symbol, tok) < 0) {
+            return -1;
+        }
+        break;
+    case TT_DOT:
+        if (parse_struct_access(state, symbol, tok) < 0) {
             return -1;
         }
         break;

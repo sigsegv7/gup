@@ -41,6 +41,22 @@ cg_compile_struct(struct gup_state *state, const char *name, struct ast_node *no
     return 0;
 }
 
+static int
+cg_compile_assign(struct gup_state *state, struct ast_node *node)
+{
+    struct ast_node *cur;
+
+    cur = node;
+    while ((cur = cur->left) != NULL) {
+        printf("%s", cur->str);
+        if (cur->left != NULL) {
+            printf(".");
+        }
+    }
+    printf(" = %zu\n", node->right->v);
+    return 0;
+}
+
 int
 cg_compile_node(struct gup_state *state, struct ast_node *node)
 {
@@ -113,6 +129,9 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
     case AST_OP_CONTINUE:
         snprintf(label, sizeof(label), "L.%zu", state->loop_count - 1);
         mu_cg_jmp(state, label);
+        break;
+    case AST_OP_ASSIGN:
+        cg_compile_assign(state, node);
         break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);

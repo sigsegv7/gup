@@ -25,6 +25,7 @@ struct gup_state;
  * @AST_OP_VAR: Variable
  * @AST_OP_BREAK: Loop break
  * @AST_OP_CONTINUE: Loop continue
+ * @AST_OP_NUMBER: Is a number
  */
 typedef enum {
     AST_OP_NONE,
@@ -39,6 +40,7 @@ typedef enum {
     AST_OP_BREAK,
     AST_OP_CONTINUE,
     AST_OP_ASSIGN,
+    AST_OP_NUMBER,
 } ast_op_t;
 
 /*
