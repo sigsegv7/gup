@@ -8,7 +8,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "gup/state.h"
 #include "gup/symbol.h"
 #include "gup/types.h"
 

@@ -3,6 +3,7 @@
 #include <errno.h>
 #include "gup/ast.h"
 #include "gup/ptrbox.h"
+#include "gup/state.h"
 
 int
 ast_node_alloc(struct gup_state *state, ast_op_t type, struct ast_node **res)
