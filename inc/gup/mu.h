@@ -65,6 +65,14 @@ int mu_cg_retvoid(struct gup_state *state);
 int mu_cg_call(struct gup_state *state, const char *label);
 
 /*
+ * Emit a jump to a label
+ *
+ * @state: Compiler state
+ * @label: Label to jump to
+ */
+int mu_cg_jmp(struct gup_state *state, const char *label);
+
+/*
  * Emit a struct
  *
  * @state: Compiler state

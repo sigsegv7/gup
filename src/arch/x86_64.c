@@ -119,6 +119,23 @@ mu_cg_call(struct gup_state *state, const char *label)
 }
 
 int
+mu_cg_jmp(struct gup_state *state, const char *label)
+{
+    if (state == NULL || label == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\tjmp %s\n",
+        label
+    );
+
+    return 0;
+}
+
+int
 mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
 {
     if (state == NULL || node == NULL) {
