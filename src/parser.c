@@ -234,6 +234,34 @@ parse_asm(struct gup_state *state, struct token *tok)
 }
 
 static int
+parse_return(struct gup_state *state, struct token *tok)
+{
+    struct ast_node *root;
+
+    if (state == NULL || tok == NULL) {
+        return -EINVAL;
+    }
+
+    /* TODO: Parse a binary expression */
+    if (parse_expect(state, tok, TT_NUMBER) < 0) {
+        return -1;
+    }
+
+    /* Allocate an ASM block AST node */
+    if (ast_node_alloc(state, AST_OP_RETIMM, &root) < 0) {
+        trace_error(state, "failed to allocate ast node for function\n");
+        return -1;
+    }
+
+    root->v = tok->v;
+    cg_compile_node(state, root);
+    if (parse_expect(state, tok, TT_SEMI) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
     struct ast_node *root;
@@ -254,6 +282,13 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
         break;
+    case TT_RETURN:
+        if (parse_return(state, tok) < 0) {
+            return -1;
+        }
+
+        state->have_return = 1;
+        break;
     case TT_PUB:
         break;
     case TT_RBRACE:
@@ -263,6 +298,11 @@ begin_parse(struct gup_state *state, struct token *tok)
         }
 
         state->this_func = NULL;
+        if (state->have_return) {
+            state->have_return = 0;
+            return 0;
+        };
+
         if (ast_node_alloc(state, AST_OP_RETVOID, &root) < 0) {
             trace_warn("[PARSER] retvoid failure\n");
             return -1;

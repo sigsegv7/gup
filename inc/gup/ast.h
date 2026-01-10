@@ -17,12 +17,15 @@
  * @AST_OP_NONE: No type
  * @AST_OP_FUNC: Is a function
  * @AST_OP_ASM: Inline assembly
+ * @AST_OP_RETVOID: Return void
+ * @AST_OP_RETIMM: Return immediate
  */
 typedef enum {
     AST_OP_NONE,
     AST_OP_FUNC,
     AST_OP_ASM,
-    AST_OP_RETVOID
+    AST_OP_RETVOID,
+    AST_OP_RETIMM,
 } ast_op_t;
 
 /*
@@ -41,6 +44,7 @@ struct ast_node {
     struct symbol *symbol;
     union {
         char *str;
+        size_t v;
     };
 };
 

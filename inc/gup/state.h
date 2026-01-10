@@ -25,6 +25,7 @@
  * @ast_ptrbox: Pointer box for AST
  * @g_symtab: Global symbol table
  * @this_func: This function [NULL if not in func]
+ * @have_return: Set if this function has a return statement
  * @out_fp: Output file pointer
  */
 struct gup_state {
@@ -36,6 +37,7 @@ struct gup_state {
     struct ptrbox ast_ptrbox;
     struct symbol_table g_symtab;
     struct symbol *this_func;
+    uint8_t have_return : 1;
     FILE *out_fp;
 };
 

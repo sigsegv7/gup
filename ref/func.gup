@@ -1,4 +1,5 @@
 pub fn main -> u8
 {
     __asm("nop");
+    return 123;
 }
