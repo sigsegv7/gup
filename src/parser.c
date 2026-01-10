@@ -184,10 +184,42 @@ parse_function(struct gup_state *state, struct token *tok)
 }
 
 static int
-begin_parse(struct gup_state *state, struct token *tok)
+parse_asm(struct gup_state *state, struct token *tok)
 {
     struct ast_node *root;
 
+    if (parse_expect(state, tok, TT_LPAREN) < 0) {
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_STRING) < 0) {
+        return -1;
+    }
+
+    /* Allocate an ASM block AST node */
+    if (ast_node_alloc(state, AST_OP_ASM, &root) < 0) {
+        trace_error(state, "failed to allocate ast node for function\n");
+        return -1;
+    }
+
+    /* Copy the contents and compile the node */
+    root->str = ptrbox_strdup(&state->ptrbox, tok->s);
+    cg_compile_node(state, root);
+
+    if (parse_expect(state, tok, TT_RPAREN) < 0) {
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_SEMI) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+begin_parse(struct gup_state *state, struct token *tok)
+{
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
         return -1;
@@ -199,34 +231,12 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
         break;
-    case TT_PUB:
-        break;
     case TT_ASM:
-        if (parse_expect(state, tok, TT_LPAREN) < 0) {
+        if (parse_asm(state, tok) < 0) {
             return -1;
         }
-
-        if (parse_expect(state, tok, TT_STRING) < 0) {
-            return -1;
-        }
-
-        /* Allocate an ASM block AST node */
-        if (ast_node_alloc(state, AST_OP_ASM, &root) < 0) {
-            trace_error(state, "failed to allocate ast node for function\n");
-            return -1;
-        }
-
-        /* Copy the contents and compile the node */
-        root->str = ptrbox_strdup(&state->ptrbox, tok->s);
-        cg_compile_node(state, root);
-
-        if (parse_expect(state, tok, TT_RPAREN) < 0) {
-            return -1;
-        }
-
-        if (parse_expect(state, tok, TT_SEMI) < 0) {
-            return -1;
-        }
+        break;
+    case TT_PUB:
         break;
     default:
         break;
