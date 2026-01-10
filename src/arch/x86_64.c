@@ -74,3 +74,19 @@ mu_cg_retimm(struct gup_state *state, regsize_t regsize, ssize_t imm)
 
     return 0;
 }
+
+int
+mu_cg_retvoid(struct gup_state *state)
+{
+    if (state == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\tret\n"
+    );
+
+    return 0;
+}

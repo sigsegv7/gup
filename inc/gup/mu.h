@@ -47,4 +47,11 @@ int mu_cg_asm(struct gup_state *state, const char *asm_str);
  */
 int mu_cg_retimm(struct gup_state *state, regsize_t regsize, ssize_t imm);
 
+/*
+ * Return a void value
+ *
+ * @state: Compiler state
+ */
+int mu_cg_retvoid(struct gup_state *state);
+
 #endif  /* !GUP_MU_H */
