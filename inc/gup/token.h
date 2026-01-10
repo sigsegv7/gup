@@ -41,6 +41,7 @@ typedef enum {
     TT_U64,         /* 'u64' */
     TT_STRING,      /* <STRING> */
     TT_ASM,         /* '__asm' */
+    TT_RETURN,      /* 'return' */
 } tt_t;
 
 /*

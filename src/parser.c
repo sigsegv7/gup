@@ -46,7 +46,8 @@ static const char *toktab[] = {
     [TT_U32]        = "U32",
     [TT_U64]        = "U64",
     [TT_STRING]     = "STRING",
-    [TT_ASM]        = "ASM"
+    [TT_ASM]        = "ASM",
+    [TT_RETURN]     = "RETURN"
 };
 
 /*
