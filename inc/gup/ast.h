@@ -37,7 +37,8 @@ typedef enum {
     AST_OP_VAR,
     AST_OP_LOOP,
     AST_OP_BREAK,
-    AST_OP_CONTINUE
+    AST_OP_CONTINUE,
+    AST_OP_ASSIGN,
 } ast_op_t;
 
 /*
