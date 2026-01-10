@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "gup/ptrbox.h"
-#include "gup/symbol.h"
 #include "gup/token.h"
+#include "gup/symbol.h"
 
 #define ASMOUT_DEFAULT "gupgen.asm"
 

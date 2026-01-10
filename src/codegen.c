@@ -36,13 +36,7 @@ cg_compile_struct(struct gup_state *state, struct ast_node *node)
         return -1;
     }
 
-    while (node != NULL) {
-        if (node->type == AST_OP_VAR) {
-            printf("got field %s\n", node->str);
-        }
-        node = node->right;
-    }
-
+    mu_cg_struct(state, "s", node);
     return 0;
 }
 

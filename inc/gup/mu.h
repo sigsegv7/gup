@@ -64,4 +64,13 @@ int mu_cg_retvoid(struct gup_state *state);
  */
 int mu_cg_call(struct gup_state *state, const char *label);
 
+/*
+ * Emit a struct
+ *
+ * @state: Compiler state
+ * @name: Name suffix
+ * @node: Root of struct
+ */
+int mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node);
+
 #endif  /* !GUP_MU_H */

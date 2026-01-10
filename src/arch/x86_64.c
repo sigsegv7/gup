@@ -19,6 +19,16 @@ static const char *retregs[] = {
     [MACH_REGSIZE_8]  = "al"
 };
 
+/* Size directives */
+static const char *asmszdir[] = {
+    [GUP_TYPE_BAD] = "bad",
+    [GUP_TYPE_VOID] = "bad",
+    [GUP_TYPE_U8] = "db",
+    [GUP_TYPE_U16] = "dw",
+    [GUP_TYPE_U32] = "dd",
+    [GUP_TYPE_U64] = "dq"
+};
+
 int
 mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
 {
@@ -104,6 +114,31 @@ mu_cg_call(struct gup_state *state, const char *label)
         "\tcall %s\n",
         label
     );
+
+    return 0;
+}
+
+int
+mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
+{
+    if (state == NULL || node == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    node = node->right;
+    while (node != NULL) {
+        if (node->data_type < GUP_TYPE_MAX) {
+            fprintf(
+                state->out_fp,
+                "%s__%s: %s 0\n",
+                name,
+                node->str,
+                asmszdir[node->data_type]
+            );
+        }
+        node = node->right;
+    }
 
     return 0;
 }
