@@ -168,7 +168,22 @@ parse_function(struct gup_state *state, struct token *tok)
         return -1;
     }
 
-    if (parse_expect(state, tok, TT_SEMI) < 0) {
+    if (lexer_scan(state, tok) < 0) {
+        return -1;
+    }
+
+    /*
+     * If there is a semicolon instead of an open LBRACE, it is simply
+     * and declaration
+     */
+    switch (tok->type) {
+    case TT_SEMI:
+        return 0;
+    case TT_LBRACE:
+        state->this_func = symbol;
+        break;
+    default:
+        trace_error(state, "expected LBRACE or SEMICOLON after func\n");
         return -1;
     }
 
@@ -238,6 +253,14 @@ begin_parse(struct gup_state *state, struct token *tok)
         break;
     case TT_PUB:
         break;
+    case TT_RBRACE:
+        if (state->this_func == NULL) {
+            trace_error(state, "unexpected RBRACE\n");
+            return -1;
+        }
+
+        state->this_func = NULL;
+        break;
     default:
         break;
     }
@@ -250,7 +273,7 @@ int
 gup_parse(struct gup_state *state)
 {
     struct token token;
-    int error;
+    int error = 0;
 
     if (state == NULL) {
         errno = -EINVAL;
@@ -279,8 +302,13 @@ gup_parse(struct gup_state *state)
         }
     }
 
+    if (state->this_func != NULL) {
+        trace_error(state, "unexpected end of file, missing RBRACE?\n");
+        error = -1;
+    }
+
     symbol_table_destroy(&state->g_symtab);
     ptrbox_destroy(&state->ast_ptrbox);
     ptrbox_destroy(&state->ptrbox);
-    return 0;
+    return error;
 }

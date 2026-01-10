@@ -24,6 +24,7 @@
  * @ptrbox: Parser pointer box
  * @ast_ptrbox: Pointer box for AST
  * @g_symtab: Global symbol table
+ * @this_func: This function [NULL if not in func]
  * @out_fp: Output file pointer
  */
 struct gup_state {
@@ -34,6 +35,7 @@ struct gup_state {
     struct ptrbox ptrbox;
     struct ptrbox ast_ptrbox;
     struct symbol_table g_symtab;
+    struct symbol *this_func;
     FILE *out_fp;
 };
 
