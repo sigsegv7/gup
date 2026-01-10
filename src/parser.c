@@ -339,6 +339,7 @@ parse_struct(struct gup_state *state, struct token *tok)
     cur = root;
     while (lexer_scan(state, tok) == 0) {
         if (tok->type == TT_RBRACE) {
+            --state->scope_depth;
             break;
         }
 
@@ -420,7 +421,10 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
 
-        state->this_func = NULL;
+        if ((--state->scope_depth) == 0) {
+            state->this_func = NULL;
+        }
+
         if (state->have_return) {
             state->have_return = 0;
             return 0;
@@ -500,12 +504,12 @@ gup_parse(struct gup_state *state)
     while (lexer_scan(state, &token) == 0) {
         trace_debug("got token: %s\n", toktab[token.type]);
         if (begin_parse(state, &token) < 0) {
-            state->this_func = NULL;
+            state->scope_depth = 0;
             break;
         }
     }
 
-    if (state->this_func != NULL) {
+    if (state->scope_depth > 0) {
         trace_error(state, "unexpected end of file, missing RBRACE?\n");
         error = -1;
     }

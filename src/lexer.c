@@ -389,6 +389,7 @@ lexer_scan(struct gup_state *state, struct token *res)
         res->c = c;
         return 0;
     case '{':
+        ++state->scope_depth;
         res->type = TT_LBRACE;
         res->c = c;
         return 0;

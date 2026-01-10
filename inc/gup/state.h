@@ -26,6 +26,7 @@
  * @g_symtab: Global symbol table
  * @this_func: This function [NULL if not in func]
  * @have_return: Set if this function has a return statement
+ * @scope_depth: How deep in '{}' [scope] are we?
  * @out_fp: Output file pointer
  */
 struct gup_state {
@@ -38,6 +39,7 @@ struct gup_state {
     struct symbol_table g_symtab;
     struct symbol *this_func;
     uint8_t have_return : 1;
+    size_t scope_depth;
     FILE *out_fp;
 };
 
