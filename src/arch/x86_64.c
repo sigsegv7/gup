@@ -29,6 +29,16 @@ static const char *asmszdir[] = {
     [GUP_TYPE_U64] = "dq"
 };
 
+/* Size directives */
+static const char *asmop[] = {
+    [GUP_TYPE_BAD] = "bad",
+    [GUP_TYPE_VOID] = "bad",
+    [GUP_TYPE_U8] = "byte",
+    [GUP_TYPE_U16] = "word",
+    [GUP_TYPE_U32] = "dword",
+    [GUP_TYPE_U64] = "qword"
+};
+
 int
 mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
 {
@@ -191,6 +201,28 @@ mu_cg_label(struct gup_state *state, const char *name)
         state->out_fp,
         "%s:\n",
         name
+    );
+
+    return 0;
+}
+
+int mu_cg_setlabel(struct gup_state *state, regsize_t size, const char *name,
+    size_t v)
+{
+    if (state == NULL || name == NULL) {
+        return -1;
+    }
+
+    if (size >= MACH_REGSIZE_MAX) {
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\tmov %s [%s], %zu\n",
+        asmop[size],
+        name,
+        v
     );
 
     return 0;

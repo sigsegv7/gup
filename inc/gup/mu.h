@@ -96,4 +96,17 @@ int mu_cg_loopstart(struct gup_state *state);
  */
 int mu_cg_label(struct gup_state *state, const char *name);
 
+/*
+ * Write a value of a specific size to a label
+ *
+ * @state: Compiler state
+ * @size: Operation size
+ * @name: Label name
+ * @v: Value to write
+ */
+int mu_cg_setlabel(
+    struct gup_state *state, regsize_t size,
+    const char *name, size_t v
+);
+
 #endif  /* !GUP_MU_H */
