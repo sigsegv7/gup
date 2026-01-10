@@ -8,6 +8,17 @@
 #include <stdio.h>
 #include "gup/mu.h"
 
+/*
+ * Return value registers according to the system V
+ * ABI
+ */
+static const char *retregs[] = {
+    [MACH_REGSIZE_64] = "rax",
+    [MACH_REGSIZE_32] = "eax",
+    [MACH_REGSIZE_16] = "ah",
+    [MACH_REGSIZE_8]  = "al"
+};
+
 int
 mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
 {
@@ -40,6 +51,25 @@ mu_cg_asm(struct gup_state *state, const char *asm_str)
         state->out_fp,
         "\t%s\n",
         asm_str
+    );
+
+    return 0;
+}
+
+int
+mu_cg_retimm(struct gup_state *state, regsize_t regsize, ssize_t imm)
+{
+    if (state == NULL || regsize >= MACH_REGSIZE_MAX) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\tmov %s, %zd\n"
+        "\tret\n",
+        retregs[regsize],
+        imm
     );
 
     return 0;
