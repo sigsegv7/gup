@@ -101,6 +101,16 @@ scope_pop(struct gup_state *state)
     return tok;
 }
 
+static tt_t
+scope_top(struct gup_state *state)
+{
+    if (state->scope_depth == 0) {
+        return state->scope_stack[0];
+    }
+
+    return state->scope_stack[state->scope_depth - 1];
+}
+
 /*
  * Assert that the next token is of a specific kind
  *
