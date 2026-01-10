@@ -417,6 +417,10 @@ lexer_scan(struct gup_state *state, struct token *res)
         res->type = TT_RBRACE;
         res->c = c;
         return 0;
+    case '.':
+        res->type = TT_DOT;
+        res->c = c;
+        return 0;
     default:
         /*
          * If we simply have a quote, it is assumed to be a

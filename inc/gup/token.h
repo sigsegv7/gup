@@ -46,6 +46,7 @@ typedef enum {
     TT_LOOP,        /* 'loop' */
     TT_BREAK,       /* 'break' */
     TT_CONTINUE,    /* 'continue' */
+    TT_DOT,         /* '.' */
 } tt_t;
 
 /*
