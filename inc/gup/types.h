@@ -6,6 +6,8 @@
 #ifndef GUP_TYPES_H
 #define GUP_TYPES_H 1
 
+#include <stdint.h>
+
 typedef uint8_t gup_type_t;
 
 #define GUP_TYPE_BAD    0x00
