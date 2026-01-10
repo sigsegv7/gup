@@ -219,7 +219,7 @@ int mu_cg_setlabel(struct gup_state *state, regsize_t size, const char *name,
 
     fprintf(
         state->out_fp,
-        "\tmov %s [%s], %zu\n",
+        "\tmov %s [rel %s], %zu\n",
         asmop[size],
         name,
         v
