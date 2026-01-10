@@ -80,6 +80,16 @@ symid_t symbol_new(
 struct symbol *symbol_from_id(struct symbol_table *tbl, symid_t id);
 
 /*
+ * Obtain a symbol from its name
+ *
+ * @tbl: Symbol table to look up within
+ * @name: Name of symbol to lookup
+ *
+ * Returns NULL if not found
+ */
+struct symbol *symbol_from_name(struct symbol_table *tbl, const char *name);
+
+/*
  * Initialize a symbol table
  *
  * @table: Symbol table to initialize
