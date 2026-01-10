@@ -9,7 +9,7 @@
 #include <sys/queue.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "gup/symbol.h"
+#include "gup/ast.h"
 #include "gup/types.h"
 
 typedef int32_t symid_t;
@@ -34,6 +34,7 @@ typedef enum {
  * @type: Symbol type
  * @data_type: Data type of symbol
  * @is_pub: If set, is public
+ * @tree: Tree associated with this node
  * @link: Queue link
  */
 struct symbol {
@@ -42,6 +43,7 @@ struct symbol {
     gup_type_t data_type;
     symid_t id;
     uint8_t is_pub : 1;
+    struct ast_node *tree;
     TAILQ_ENTRY(symbol) link;
 };
 

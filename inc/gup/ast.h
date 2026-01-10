@@ -10,6 +10,9 @@
 #include <stddef.h>
 #include "gup/state.h"
 #include "gup/symbol.h"
+#include "gup/types.h"
+
+struct gup_state;
 
 /*
  * Represents valid AST node types

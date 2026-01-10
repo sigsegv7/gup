@@ -333,6 +333,8 @@ parse_struct(struct gup_state *state, struct token *tok)
 
     if (root != NULL) {
         cg_compile_node(state, root);
+        if (symbol != NULL)
+            symbol->tree = root;
     }
     return 0;
 }
