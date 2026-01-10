@@ -23,7 +23,6 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
     switch (node->type) {
     case AST_OP_FUNC:
         if ((symbol = node->symbol) == NULL) {
-            errno = -EIO;
             trace_error(state, "[AST] function has no symbol\n");
             return -1;
         }
