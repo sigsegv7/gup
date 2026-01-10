@@ -1,0 +1,26 @@
+__asm("[bits 16]");
+__asm("[org 0x7C00]");
+
+struct boot_info {
+    u8 boot_drive;
+}
+
+fn halt -> void;
+struct boot_info info;
+
+pub fn _start -> void
+{
+    __asm("mov byte [info.boot_drive], dl");
+    halt();
+}
+
+fn halt -> void
+{
+    loop {
+        __asm("cli");
+        __asm("hlt");
+    }
+}
+
+__asm("times 510 - ($ - $$) db 0");
+__asm("dw 0xAA55");
