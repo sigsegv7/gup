@@ -112,13 +112,81 @@ parse_expect(struct gup_state *state, struct token *tok, tt_t what)
 }
 
 static int
-begin_parse(struct gup_state *state, struct token *tok)
+parse_function(struct gup_state *state, struct token *tok)
 {
-    struct symbol *symbol;
     struct ast_node *root;
     struct token *last_tok;
+    struct symbol *symbol;
     symid_t sym_id;
     gup_type_t type;
+
+    if (parse_expect(state, tok, TT_IDENT) < 0) {
+        return -1;
+    }
+
+    sym_id = symbol_new(
+        &state->g_symtab,
+        tok->s,
+        SYMBOL_TYPE_FUNC,
+        &symbol
+    );
+
+    if (sym_id < 0) {
+        trace_error(state, "failed to create symbol for \"%s\"\n", tok->s);
+        return -1;
+    }
+
+    /*
+     * If the token before the function was 'pub' then we shall
+     * mark this function as public.
+     */
+    last_tok = &state->last_token;
+    if (last_tok->type == TT_PUB) {
+        symbol->is_pub = 1;
+    }
+
+    if (parse_expect(state, tok, TT_MINUS) < 0) {
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_GT) < 0) {
+        return -1;
+    }
+
+    if (lexer_scan(state, tok) < 0) {
+        trace_error(state, "expected TYPE after '->'\n");
+        return -1;
+    }
+
+    type = token_to_type(tok->type);
+    if (type == GUP_TYPE_BAD) {
+        trace_error(
+            state,
+            "expected TYPE after '->', got %s\n",
+            toktab[tok->type]
+        );
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_SEMI) < 0) {
+        return -1;
+    }
+
+    symbol->data_type = type;
+    if (ast_node_alloc(state, AST_OP_FUNC, &root) < 0) {
+        trace_error(state, "failed to allocate ast node for function\n");
+        return -1;
+    }
+
+    root->symbol = symbol;
+    cg_compile_node(state, root);
+    return 0;
+}
+
+static int
+begin_parse(struct gup_state *state, struct token *tok)
+{
+    struct ast_node *root;
 
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
@@ -127,66 +195,9 @@ begin_parse(struct gup_state *state, struct token *tok)
 
     switch (tok->type) {
     case TT_FN:
-        if (parse_expect(state, tok, TT_IDENT) < 0) {
+        if (parse_function(state, tok) < 0) {
             return -1;
         }
-
-        sym_id = symbol_new(
-            &state->g_symtab,
-            tok->s,
-            SYMBOL_TYPE_FUNC,
-            &symbol
-        );
-
-        if (sym_id < 0) {
-            trace_error(state, "failed to create symbol for \"%s\"\n", tok->s);
-            return -1;
-        }
-
-        /*
-         * If the token before the function was 'pub' then we shall
-         * mark this function as public.
-         */
-        last_tok = &state->last_token;
-        if (last_tok->type == TT_PUB) {
-            symbol->is_pub = 1;
-        }
-
-        if (parse_expect(state, tok, TT_MINUS) < 0) {
-            return -1;
-        }
-
-        if (parse_expect(state, tok, TT_GT) < 0) {
-            return -1;
-        }
-
-        if (lexer_scan(state, tok) < 0) {
-            trace_error(state, "expected TYPE after '->'\n");
-            return -1;
-        }
-
-        type = token_to_type(tok->type);
-        if (type == GUP_TYPE_BAD) {
-            trace_error(
-                state,
-                "expected TYPE after '->', got %s\n",
-                toktab[tok->type]
-            );
-            return -1;
-        }
-
-        if (parse_expect(state, tok, TT_SEMI) < 0) {
-            return -1;
-        }
-
-        symbol->data_type = type;
-        if (ast_node_alloc(state, AST_OP_FUNC, &root) < 0) {
-            trace_error(state, "failed to allocate ast node for function\n");
-            return -1;
-        }
-
-        root->symbol = symbol;
-        cg_compile_node(state, root);
         break;
     case TT_PUB:
         break;
