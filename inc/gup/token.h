@@ -44,6 +44,7 @@ typedef enum {
     TT_RETURN,      /* 'return' */
     TT_STRUCT,      /* 'struct' */
     TT_LOOP,        /* 'loop' */
+    TT_BREAK,       /* 'break' */
 } tt_t;
 
 /*

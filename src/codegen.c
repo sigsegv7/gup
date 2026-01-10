@@ -105,6 +105,11 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
             mu_cg_label(state, label);
         }
         break;
+    case AST_OP_BREAK:
+        /* Jump out of the loop */
+        snprintf(label, sizeof(label), "L.%zu.1", state->loop_count - 1);
+        mu_cg_jmp(state, label);
+        break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);
         return -1;

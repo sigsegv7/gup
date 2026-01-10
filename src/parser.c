@@ -49,7 +49,8 @@ static const char *toktab[] = {
     [TT_ASM]        = "ASM",
     [TT_RETURN]     = "RETURN",
     [TT_STRUCT]     = "STRUCT",
-    [TT_LOOP]       = "LOOP"
+    [TT_LOOP]       = "LOOP",
+    [TT_BREAK]      = "BREAK"
 };
 
 /*
@@ -489,6 +490,23 @@ begin_parse(struct gup_state *state, struct token *tok)
 
         break;
     case TT_PUB:
+        break;
+    case TT_BREAK:
+        if (scope_top(state) != TT_LOOP) {
+            trace_error(state, "unexpected 'break'\n");
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_SEMI) < 0) {
+            return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_BREAK, &root) < 0) {
+            trace_warn("[PARSER] break node creation failure\n");
+            return -1;
+        }
+
+        cg_compile_node(state, root);
         break;
     case TT_RBRACE:
         if (state->this_func == NULL) {
