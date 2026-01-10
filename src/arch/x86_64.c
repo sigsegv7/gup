@@ -128,10 +128,14 @@ mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
 
     node = node->right;
     while (node != NULL) {
+        if (node->str == NULL) {
+            node = node->right;
+            continue;
+        }
         if (node->data_type < GUP_TYPE_MAX) {
             fprintf(
                 state->out_fp,
-                "%s__%s: %s 0\n",
+                "%s: %s: %s 0\n",
                 name,
                 node->str,
                 asmszdir[node->data_type]
