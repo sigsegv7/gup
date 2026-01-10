@@ -3,6 +3,7 @@
  * Provided under the BSD-3 clause.
  */
 
+#include <stdio.h>
 #include <errno.h>
 #include <stddef.h>
 #include "gup/types.h"
@@ -95,8 +96,13 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         if (!node->epilogue) {
             mu_cg_loopstart(state);
         } else {
+            /* Emit the jump loop */
             snprintf(label, sizeof(label), "L.%zu", state->loop_count - 1);
             mu_cg_jmp(state, label);
+
+            /* Emit the end label */
+            snprintf(label, sizeof(label), "L.%zu.1", state->loop_count - 1);
+            mu_cg_label(state, label);
         }
         break;
     default:
