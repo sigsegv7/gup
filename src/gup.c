@@ -4,6 +4,8 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
 #include "gup/state.h"
@@ -13,6 +15,8 @@
 #define ELAPSED_NS(STARTP, ENDP)                            \
     (double)((ENDP)->tv_sec - (STARTP)->tv_sec) * 1.0e9 +    \
         (double)((ENDP)->tv_nsec - (STARTP)->tv_nsec)
+
+static bool asm_only = false;
 
 static void
 help(void)
@@ -60,6 +64,11 @@ compile(const char *path)
 
     printf("compiled in %.2fms [%.2fns]\n", elapsed_ms, elapsed_ns);
     gup_close(&state);
+
+    if (!asm_only) {
+        system("nasm -felf64 gupgen.asm");
+        remove("gupgen.asm");
+    }
     return 0;
 }
 
@@ -68,13 +77,16 @@ main(int argc, char **argv)
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "hv")) != -1) {
+    while ((opt = getopt(argc, argv, "hva")) != -1) {
         switch (opt) {
         case 'h':
             help();
             break;
         case 'v':
             version();
+            break;
+        case 'a':
+            asm_only = true;
             break;
         }
     }
