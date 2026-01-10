@@ -47,7 +47,8 @@ static const char *toktab[] = {
     [TT_U64]        = "U64",
     [TT_STRING]     = "STRING",
     [TT_ASM]        = "ASM",
-    [TT_RETURN]     = "RETURN"
+    [TT_RETURN]     = "RETURN",
+    [TT_STRUCT]     = "STRUCT"
 };
 
 /*
@@ -262,6 +263,81 @@ parse_return(struct gup_state *state, struct token *tok)
 }
 
 static int
+parse_struct(struct gup_state *state, struct token *tok)
+{
+    struct symbol *symbol;
+    struct ast_node *root, *cur;
+    symid_t sym_id;
+    gup_type_t type;
+
+    if (state == NULL || tok == NULL) {
+        return -EINVAL;
+    }
+
+    if (parse_expect(state, tok, TT_IDENT) < 0) {
+        return -1;
+    }
+
+    if (parse_expect(state, tok, TT_LBRACE) < 0) {
+        return -1;
+    }
+
+    sym_id = symbol_new(
+        &state->g_symtab,
+        tok->s,
+        SYMBOL_TYPE_STRUCT,
+        &symbol
+    );
+
+    if (sym_id < 0) {
+        return -1;
+    }
+
+    if (ast_node_alloc(state, AST_OP_STRUCT, &root) < 0){
+        return -1;
+    }
+
+    cur = root;
+    while (lexer_scan(state, tok) == 0) {
+        if (tok->type == TT_RBRACE) {
+            break;
+        }
+
+        type = token_to_type(tok->type);
+        if (type == GUP_TYPE_BAD) {
+            trace_error(
+                state,
+                "expected type, got %s\n",
+                toktab[tok->type]
+            );
+
+            return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_VAR, &cur->right) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_IDENT) < 0) {
+            return -1;
+        }
+
+        cur = cur->right;
+        cur->data_type = type;
+        cur->str = ptrbox_strdup(&state->ptrbox, tok->s);
+
+        if (parse_expect(state, tok, TT_SEMI) < 0) {
+            return -1;
+        }
+    }
+
+    if (root != NULL) {
+        cg_compile_node(state, root);
+    }
+    return 0;
+}
+
+static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
     struct ast_node *root;
@@ -289,6 +365,12 @@ begin_parse(struct gup_state *state, struct token *tok)
         }
 
         state->have_return = 1;
+        break;
+    case TT_STRUCT:
+        if (parse_struct(state, tok) < 0) {
+            return -1;
+        }
+
         break;
     case TT_PUB:
         break;

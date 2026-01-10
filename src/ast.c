@@ -21,6 +21,7 @@ ast_node_alloc(struct gup_state *state, ast_op_t type, struct ast_node **res)
     }
 
     node->type = type;
+    node->data_type = GUP_TYPE_BAD;
     node->left = NULL;
     node->right = NULL;
     node->symbol = NULL;

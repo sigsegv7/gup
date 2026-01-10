@@ -19,6 +19,8 @@
  * @AST_OP_ASM: Inline assembly
  * @AST_OP_RETVOID: Return void
  * @AST_OP_RETIMM: Return immediate
+ * @AST_OP_STRUCT: Structure
+ * @AST_OP_VAR: Variable
  */
 typedef enum {
     AST_OP_NONE,
@@ -26,7 +28,9 @@ typedef enum {
     AST_OP_ASM,
     AST_OP_RETVOID,
     AST_OP_RETIMM,
-    AST_OP_CALL
+    AST_OP_CALL,
+    AST_OP_STRUCT,
+    AST_OP_VAR
 } ast_op_t;
 
 /*
@@ -34,12 +38,14 @@ typedef enum {
  * tree.
  *
  * @type: AST node type
+ * @data_type: Data type
  * @left: Left leaf
  * @right: Right leaf
  * @symbol: Symbol this node refers to
  */
 struct ast_node {
     ast_op_t type;
+    gup_type_t data_type;
     struct ast_node *left;
     struct ast_node *right;
     struct symbol *symbol;

@@ -28,6 +28,24 @@ dtype_to_regsize(gup_type_t type)
     }
 }
 
+static int
+cg_compile_struct(struct gup_state *state, struct ast_node *node)
+{
+    if (state == NULL || node == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    while (node != NULL) {
+        if (node->type == AST_OP_VAR) {
+            printf("got field %s\n", node->str);
+        }
+        node = node->right;
+    }
+
+    return 0;
+}
+
 int
 cg_compile_node(struct gup_state *state, struct ast_node *node)
 {
@@ -74,6 +92,9 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         }
 
         mu_cg_call(state, symbol->name);
+        break;
+    case AST_OP_STRUCT:
+        cg_compile_struct(state, node);
         break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);

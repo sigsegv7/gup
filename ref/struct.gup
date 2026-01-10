@@ -1,0 +1,6 @@
+struct var {
+    u8 foo;
+    u16 bar;
+    u32 long;
+    u64 quad;
+}

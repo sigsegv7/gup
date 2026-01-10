@@ -19,10 +19,12 @@ typedef int32_t symid_t;
  *
  * @SYMBOL_TYPE_NONE: No type
  * @SYMBOL_TYPE_FUNC: Is a function
+ * @SYMBOL_TYPE_STRUCT: Is a struct
  */
 typedef enum {
     SYMBOL_TYPE_NONE,
-    SYMBOL_TYPE_FUNC
+    SYMBOL_TYPE_FUNC,
+    SYMBOL_TYPE_STRUCT
 } symtype_t;
 
 /*
