@@ -347,6 +347,7 @@ gup_parse(struct gup_state *state)
     while (lexer_scan(state, &token) == 0) {
         trace_debug("got token: %s\n", toktab[token.type]);
         if (begin_parse(state, &token) < 0) {
+            state->this_func = NULL;
             break;
         }
     }
