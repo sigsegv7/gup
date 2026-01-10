@@ -88,4 +88,12 @@ int mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *nod
  */
 int mu_cg_loopstart(struct gup_state *state);
 
+/*
+ * Emit a label
+ *
+ * @state: Compiler state
+ * @name: Label name
+ */
+int mu_cg_label(struct gup_state *state, const char *name);
+
 #endif  /* !GUP_MU_H */

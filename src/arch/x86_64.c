@@ -179,3 +179,19 @@ mu_cg_loopstart(struct gup_state *state)
 
     return 0;
 }
+
+int
+mu_cg_label(struct gup_state *state, const char *name)
+{
+    if (state == NULL || name == NULL) {
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "%s:\n",
+        name
+    );
+
+    return 0;
+}
