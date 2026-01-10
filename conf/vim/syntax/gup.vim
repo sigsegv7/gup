@@ -9,6 +9,8 @@ syntax match GupVoid /void/
 syntax match GupLoop /loop/
 syntax match GupReturn /return/
 syntax match GupStruct /struct/
+syntax match GupBreak /break/
+syntax match GupContinue /continue/
 syntax region GupString start='"' end='"'
 
 highlight GupFn ctermfg=red  guifg=#ff0000
@@ -22,4 +24,6 @@ highlight GupVoid ctermfg=red  guifg=#ff0000
 highlight GupString ctermfg=green guifg=#00dd00
 highlight GupReturn ctermfg=red  guifg=#ff0000
 highlight GupStruct ctermfg=red  guifg=#ff0000
+highlight GupBreak ctermfg=red  guifg=#ff0000
+highlight GupContinue ctermfg=red  guifg=#ff0000
 highlight GupLoop ctermfg=red  guifg=#ff0000
