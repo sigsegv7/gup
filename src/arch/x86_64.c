@@ -39,6 +39,32 @@ static const char *asmop[] = {
     [GUP_TYPE_U64] = "qword"
 };
 
+/* Section list */
+static const char *sectab[] = {
+    [SECTION_NONE] = "none",
+    [SECTION_TEXT] = ".text",
+    [SECTION_DATA] = ".data",
+    [SECTION_BSS]  = ".bss"
+};
+
+static void
+cg_assert_section(struct gup_state *state, bin_section_t section)
+{
+    if (section >= SECTION_MAX) {
+        return;
+    }
+
+    if (state->cur_section != section) {
+        fprintf(
+            state->out_fp,
+            "section %s\n",
+            sectab[section]
+        );
+
+        state->cur_section = section;
+    }
+}
+
 int
 mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
 {
@@ -51,6 +77,7 @@ mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
         fprintf(state->out_fp, "[global %s]\n", name);
     }
 
+    cg_assert_section(state, SECTION_TEXT);
     fprintf(
         state->out_fp,
         "%s:\n",
@@ -153,7 +180,9 @@ mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
         return -1;
     }
 
+    cg_assert_section(state, SECTION_DATA);
     node = node->right;
+
     while (node != NULL) {
         if (node->str == NULL) {
             node = node->right;
@@ -181,6 +210,7 @@ mu_cg_loopstart(struct gup_state *state)
         return -1;
     }
 
+    cg_assert_section(state, SECTION_TEXT);
     fprintf(
         state->out_fp,
         "L.%zu:\n",
@@ -197,6 +227,7 @@ mu_cg_label(struct gup_state *state, const char *name)
         return -1;
     }
 
+    cg_assert_section(state, SECTION_TEXT);
     fprintf(
         state->out_fp,
         "%s:\n",
