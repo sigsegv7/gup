@@ -12,6 +12,7 @@
 #include "gup/token.h"
 #include "gup/symbol.h"
 
+#define MAX_SCOPE_DEPTH 8
 #define ASMOUT_DEFAULT "gupgen.asm"
 
 /*
@@ -26,7 +27,9 @@
  * @g_symtab: Global symbol table
  * @this_func: This function [NULL if not in func]
  * @have_return: Set if this function has a return statement
+ * @loop_count: Number of loops present in program
  * @scope_depth: How deep in '{}' [scope] are we?
+ * @scope_stack: Used to keep track of scopes
  * @out_fp: Output file pointer
  */
 struct gup_state {
@@ -39,7 +42,9 @@ struct gup_state {
     struct symbol_table g_symtab;
     struct symbol *this_func;
     uint8_t have_return : 1;
+    size_t loop_count;
     size_t scope_depth;
+    tt_t scope_stack[MAX_SCOPE_DEPTH];
     FILE *out_fp;
 };
 

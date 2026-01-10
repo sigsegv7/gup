@@ -43,6 +43,7 @@ typedef enum {
     TT_ASM,         /* '__asm' */
     TT_RETURN,      /* 'return' */
     TT_STRUCT,      /* 'struct' */
+    TT_LOOP,        /* 'loop' */
 } tt_t;
 
 /*

@@ -48,7 +48,8 @@ static const char *toktab[] = {
     [TT_STRING]     = "STRING",
     [TT_ASM]        = "ASM",
     [TT_RETURN]     = "RETURN",
-    [TT_STRUCT]     = "STRUCT"
+    [TT_STRUCT]     = "STRUCT",
+    [TT_LOOP]       = "LOOP"
 };
 
 /*
@@ -73,6 +74,31 @@ token_to_type(tt_t tok)
     default:
         return GUP_TYPE_BAD;
     }
+}
+
+static int
+scope_push(struct gup_state *state, tt_t scope)
+{
+    if (state->scope_depth >= MAX_SCOPE_DEPTH) {
+        trace_error(state, "max nest level [%d] exceeded\n", MAX_SCOPE_DEPTH);
+        return -1;
+    }
+    state->scope_stack[state->scope_depth++] = scope;
+    return 0;
+}
+
+static tt_t
+scope_pop(struct gup_state *state)
+{
+    tt_t tok;
+
+    if (state->scope_depth == 0) {
+        return state->scope_stack[0];
+    }
+
+    tok = state->scope_stack[--state->scope_depth];
+    state->scope_stack[state->scope_depth] = TT_NONE;
+    return tok;
 }
 
 /*
@@ -183,6 +209,9 @@ parse_function(struct gup_state *state, struct token *tok)
         return 0;
     case TT_LBRACE:
         state->this_func = symbol;
+        if (scope_push(state, TT_FN) < 0) {
+            return -1;
+        }
         break;
     default:
         trace_error(state, "expected LBRACE or SEMICOLON after func\n");
@@ -315,6 +344,9 @@ parse_struct(struct gup_state *state, struct token *tok)
         cg_compile_node(state, root);
         return 0;
     case TT_LBRACE:
+        if (scope_push(state, TT_STRUCT) < 0) {
+            return -1;
+        }
         break;
     default:
         trace_error(state, "unexpected token %s\n", toktab[tok->type]);
@@ -378,11 +410,44 @@ parse_struct(struct gup_state *state, struct token *tok)
     return 0;
 }
 
+/*
+ * Parse an end of scope
+ *
+ * @state: Compiler state
+ * @scope_tok: Token
+ */
+static int
+parse_endscope(struct gup_state *state, tt_t scope_tok)
+{
+    struct ast_node *root;
+
+    if (state == NULL) {
+        return -EINVAL;
+    }
+
+    switch (scope_tok) {
+    case TT_LOOP:
+        if (ast_node_alloc(state, AST_OP_LOOP, &root) < 0) {
+            trace_warn("[PARSER] retvoid failure\n");
+            return -1;
+        }
+
+        root->epilogue = 1;
+        cg_compile_node(state, root);
+        break;
+    default:
+        return -1;
+    }
+
+    return -1;
+}
+
 static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
     struct ast_node *root;
     struct symbol *symbol;
+    tt_t scope_tok;
 
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
@@ -421,8 +486,15 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
 
-        if ((--state->scope_depth) == 0) {
+        scope_tok = scope_pop(state);
+        parse_endscope(state, scope_tok);
+
+        if (state->scope_depth == 0) {
             state->this_func = NULL;
+        }
+
+        if (state->scope_depth > 0) {
+            return 0;
         }
 
         if (state->have_return) {
@@ -432,6 +504,22 @@ begin_parse(struct gup_state *state, struct token *tok)
 
         if (ast_node_alloc(state, AST_OP_RETVOID, &root) < 0) {
             trace_warn("[PARSER] retvoid failure\n");
+            return -1;
+        }
+
+        cg_compile_node(state, root);
+        break;
+    case TT_LOOP:
+        if (parse_expect(state, tok, TT_LBRACE) < 0) {
+            return -1;
+        }
+
+        if (scope_push(state, TT_LOOP) < 0) {
+            return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_LOOP, &root) < 0) {
+            trace_error(state, "[PARSER] failed to allocate ast node\n");
             return -1;
         }
 

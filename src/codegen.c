@@ -44,6 +44,7 @@ int
 cg_compile_node(struct gup_state *state, struct ast_node *node)
 {
     struct symbol *symbol;
+    char label[32];
 
     if (node == NULL) {
         errno = -EINVAL;
@@ -89,6 +90,14 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         break;
     case AST_OP_STRUCT:
         cg_compile_struct(state, node->str, node);
+        break;
+    case AST_OP_LOOP:
+        if (!node->epilogue) {
+            mu_cg_loopstart(state);
+        } else {
+            snprintf(label, sizeof(label), "L.%zu", state->loop_count - 1);
+            mu_cg_jmp(state, label);
+        }
         break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);

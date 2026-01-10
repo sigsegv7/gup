@@ -32,7 +32,8 @@ typedef enum {
     AST_OP_RETIMM,
     AST_OP_CALL,
     AST_OP_STRUCT,
-    AST_OP_VAR
+    AST_OP_VAR,
+    AST_OP_LOOP
 } ast_op_t;
 
 /*
@@ -44,6 +45,7 @@ typedef enum {
  * @left: Left leaf
  * @right: Right leaf
  * @symbol: Symbol this node refers to
+ * @epilogue: Set if end of block
  */
 struct ast_node {
     ast_op_t type;
@@ -51,6 +53,7 @@ struct ast_node {
     struct ast_node *left;
     struct ast_node *right;
     struct symbol *symbol;
+    uint8_t epilogue : 1;
     union {
         char *str;
         size_t v;

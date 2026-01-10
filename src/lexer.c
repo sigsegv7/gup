@@ -311,6 +311,13 @@ lexer_check_kw(struct gup_state *state, struct token *tok)
         }
 
         break;
+    case 'l':
+        if (strcmp(tok->s, "loop") == 0) {
+            tok->type = TT_LOOP;
+            return 0;
+        }
+
+        break;
     }
 
     return -1;
@@ -389,7 +396,6 @@ lexer_scan(struct gup_state *state, struct token *res)
         res->c = c;
         return 0;
     case '{':
-        ++state->scope_depth;
         res->type = TT_LBRACE;
         res->c = c;
         return 0;
