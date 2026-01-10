@@ -509,6 +509,23 @@ begin_parse(struct gup_state *state, struct token *tok)
 
         cg_compile_node(state, root);
         break;
+    case TT_CONTINUE:
+        if (scope_top(state) != TT_LOOP) {
+            trace_error(state, "unexpected 'continue'\n");
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_SEMI) < 0) {
+            return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_CONTINUE, &root) < 0) {
+            trace_warn("[PARSER] continue node creation failure\n");
+            return -1;
+        }
+
+        cg_compile_node(state, root);
+        break;
     case TT_RBRACE:
         if (state->this_func == NULL) {
             trace_error(state, "unexpected RBRACE\n");
