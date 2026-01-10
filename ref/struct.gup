@@ -4,3 +4,5 @@ struct var {
     u32 long;
     u64 quad;
 }
+
+struct var foo;

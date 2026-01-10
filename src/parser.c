@@ -269,6 +269,8 @@ parse_struct(struct gup_state *state, struct token *tok)
     struct ast_node *root, *cur;
     symid_t sym_id;
     gup_type_t type;
+    char *struct_name;
+    char *instance_name = "none";
 
     if (state == NULL || tok == NULL) {
         return -EINVAL;
@@ -278,13 +280,51 @@ parse_struct(struct gup_state *state, struct token *tok)
         return -1;
     }
 
-    if (parse_expect(state, tok, TT_LBRACE) < 0) {
+    struct_name = tok->s;
+
+    if (lexer_scan(state, tok) < 0) {
+        trace_error(state, "unexpected end of file\n");
+        return -1;
+    }
+
+    /*
+     * If this is an identifier, we are creating an instance
+     * of the struct.
+     */
+    if (tok->type == TT_IDENT) {
+        instance_name = tok->s;
+        if (lexer_scan(state, tok) < 0) {
+            trace_error(state, "unexpected end of file\n");
+            return -1;
+        }
+    }
+
+    switch (tok->type) {
+    case TT_SEMI:
+        symbol = symbol_from_name(&state->g_symtab, struct_name);
+        printf("%s\n", struct_name);
+        if (symbol == NULL) {
+            return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_STRUCT, &root) < 0){
+            return -1;
+        }
+
+        root->right = symbol->tree;
+        root->str = instance_name;
+        cg_compile_node(state, root);
+        return 0;
+    case TT_LBRACE:
+        break;
+    default:
+        trace_error(state, "unexpected token %s\n", toktab[tok->type]);
         return -1;
     }
 
     sym_id = symbol_new(
         &state->g_symtab,
-        tok->s,
+        struct_name,
         SYMBOL_TYPE_STRUCT,
         &symbol
     );
@@ -332,7 +372,6 @@ parse_struct(struct gup_state *state, struct token *tok)
     }
 
     if (root != NULL) {
-        cg_compile_node(state, root);
         if (symbol != NULL)
             symbol->tree = root;
     }
