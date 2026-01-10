@@ -371,7 +371,7 @@ parse_struct(struct gup_state *state, struct token *tok)
     cur = root;
     while (lexer_scan(state, tok) == 0) {
         if (tok->type == TT_RBRACE) {
-            --state->scope_depth;
+            scope_pop(state);
             break;
         }
 
