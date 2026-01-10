@@ -18,4 +18,12 @@
  */
 int mu_cg_funcp(struct gup_state *state, const char *name, bool is_global);
 
+/*
+ * Inject inline assembly
+ *
+ * @state: Compiler state
+ * @asm_str: Assembly to inject
+ */
+int mu_cg_asm(struct gup_state *state, const char *asm_str);
+
 #endif  /* !GUP_MU_H */

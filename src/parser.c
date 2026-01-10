@@ -43,7 +43,8 @@ static const char *toktab[] = {
     [TT_U16]        = "U16",
     [TT_U32]        = "U32",
     [TT_U64]        = "U64",
-    [TT_STRING]     = "STRING"
+    [TT_STRING]     = "STRING",
+    [TT_ASM]        = "ASM"
 };
 
 /*
@@ -186,6 +187,33 @@ begin_parse(struct gup_state *state, struct token *tok)
         cg_compile_node(state, root);
         break;
     case TT_PUB:
+        break;
+    case TT_ASM:
+        if (parse_expect(state, tok, TT_LPAREN) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_STRING) < 0) {
+            return -1;
+        }
+
+        /* Allocate an ASM block AST node */
+        if (ast_node_alloc(state, AST_OP_ASM, &root) < 0) {
+            trace_error(state, "failed to allocate ast node for function\n");
+            return -1;
+        }
+
+        /* Copy the contents and compile the node */
+        root->str = ptrbox_strdup(&state->ptrbox, tok->s);
+        cg_compile_node(state, root);
+
+        if (parse_expect(state, tok, TT_RPAREN) < 0) {
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_SEMI) < 0) {
+            return -1;
+        }
         break;
     default:
         break;

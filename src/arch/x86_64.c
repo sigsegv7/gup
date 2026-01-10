@@ -27,3 +27,20 @@ mu_cg_funcp(struct gup_state *state, const char *name, bool is_global)
     );
     return 0;
 }
+
+int
+mu_cg_asm(struct gup_state *state, const char *asm_str)
+{
+    if (state == NULL || asm_str == NULL) {
+        errno = -EINVAL;
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "\t%s\n",
+        asm_str
+    );
+
+    return 0;
+}

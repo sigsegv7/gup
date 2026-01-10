@@ -16,10 +16,12 @@
  *
  * @AST_OP_NONE: No type
  * @AST_OP_FUNC: Is a function
+ * @AST_OP_ASM: Inline assembly
  */
 typedef enum {
     AST_OP_NONE,
-    AST_OP_FUNC
+    AST_OP_FUNC,
+    AST_OP_ASM
 } ast_op_t;
 
 /*
@@ -36,6 +38,9 @@ struct ast_node {
     struct ast_node *left;
     struct ast_node *right;
     struct symbol *symbol;
+    union {
+        char *str;
+    };
 };
 
 /*

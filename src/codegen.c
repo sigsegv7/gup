@@ -31,6 +31,12 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         trace_debug("[AST] detected function %s\n", symbol->name);
         mu_cg_funcp(state, symbol->name, symbol->is_pub);
         break;
+    case AST_OP_ASM:
+        if (node->str == NULL) {
+            return -1;
+        }
+        mu_cg_asm(state, node->str);
+        break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);
         return -1;

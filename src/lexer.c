@@ -247,6 +247,13 @@ lexer_check_kw(struct gup_state *state, struct token *tok)
     }
 
     switch (*tok->s) {
+    case '_':
+        if (strcmp(tok->s, "__asm") == 0) {
+            tok->type = TT_ASM;
+            return 0;
+        }
+
+        break;
     case 'f':
         if (strcmp(tok->s, "fn") == 0) {
             tok->type = TT_FN;
