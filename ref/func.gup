@@ -1,5 +1,10 @@
-pub fn main -> u8
+fn nop -> void
 {
     __asm("nop");
+}
+
+pub fn main -> u8
+{
+    blah();
     return 123;
 }

@@ -63,6 +63,18 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         }
         mu_cg_retimm(state, dtype_to_regsize(symbol->data_type), node->v);
         break;
+    case AST_OP_CALL:
+        if ((symbol = node->symbol) == NULL) {
+            return -1;
+        }
+
+        if (symbol->type != SYMBOL_TYPE_FUNC) {
+            trace_error(state, "[AST] %s is not a function\n", symbol->name);
+            return -1;
+        }
+
+        mu_cg_call(state, symbol->name);
+        break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);
         return -1;

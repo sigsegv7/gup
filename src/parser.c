@@ -265,6 +265,7 @@ static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
     struct ast_node *root;
+    struct symbol *symbol;
 
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
@@ -308,6 +309,36 @@ begin_parse(struct gup_state *state, struct token *tok)
             return -1;
         }
 
+        cg_compile_node(state, root);
+        break;
+    case TT_IDENT:
+        symbol = symbol_from_name(&state->g_symtab, tok->s);
+        if (symbol == NULL) {
+            trace_error(
+                state,
+                "implicit declaration of function \"%s\"\n",
+                tok->s
+            );
+
+            return -1;
+        }
+
+        if (parse_expect(state, tok, TT_LPAREN) < 0) {
+            return -1;
+        }
+
+        /* Expect () if we see '(' */
+        if (tok->type == TT_LPAREN) {
+            if (parse_expect(state, tok, TT_RPAREN) < 0)
+                return -1;
+        }
+
+        if (ast_node_alloc(state, AST_OP_CALL, &root) < 0) {
+            trace_warn("[PARSER] retvoid failure\n");
+            return -1;
+        }
+
+        root->symbol = symbol;
         cg_compile_node(state, root);
         break;
     default:
