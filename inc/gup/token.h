@@ -45,6 +45,7 @@ typedef enum {
     TT_STRUCT,      /* 'struct' */
     TT_LOOP,        /* 'loop' */
     TT_BREAK,       /* 'break' */
+    TT_CONTINUE,    /* 'continue' */
 } tt_t;
 
 /*
