@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <time.h>
 #include "gup/state.h"
@@ -17,6 +18,7 @@
         (double)((ENDP)->tv_nsec - (STARTP)->tv_nsec)
 
 static bool asm_only = false;
+static const char *bin_fmt = "elf64";
 
 static void
 help(void)
@@ -41,6 +43,7 @@ version(void)
 static int
 compile(const char *path)
 {
+    char cmd[32];
     struct gup_state state;
     struct timespec start, end;
     double elapsed_ms, elapsed_ns;
@@ -65,8 +68,16 @@ compile(const char *path)
     printf("compiled in %.2fms [%.2fns]\n", elapsed_ms, elapsed_ns);
     gup_close(&state);
 
+    /* Generate the output if we can */
     if (!asm_only) {
-        system("nasm -felf64 gupgen.asm");
+        snprintf(
+            cmd,
+            sizeof(cmd),
+            "nasm -f%s gupgen.asm",
+            bin_fmt
+        );
+
+        system(cmd);
         remove("gupgen.asm");
     }
     return 0;
@@ -77,7 +88,7 @@ main(int argc, char **argv)
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "hva")) != -1) {
+    while ((opt = getopt(argc, argv, "hvaf:")) != -1) {
         switch (opt) {
         case 'h':
             help();
@@ -87,6 +98,9 @@ main(int argc, char **argv)
             break;
         case 'a':
             asm_only = true;
+            break;
+        case 'f':
+            bin_fmt = strdup(optarg);
             break;
         }
     }
