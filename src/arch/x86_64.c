@@ -146,3 +146,19 @@ mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
 
     return 0;
 }
+
+int
+mu_cg_loopstart(struct gup_state *state)
+{
+    if (state == NULL) {
+        return -1;
+    }
+
+    fprintf(
+        state->out_fp,
+        "L.%zu:\n",
+        state->loop_count++
+    );
+
+    return 0;
+}

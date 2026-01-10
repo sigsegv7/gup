@@ -73,4 +73,11 @@ int mu_cg_call(struct gup_state *state, const char *label);
  */
 int mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node);
 
+/*
+ * Emit a loop start
+ *
+ * @state: Compiler state
+ */
+int mu_cg_loopstart(struct gup_state *state);
+
 #endif  /* !GUP_MU_H */
