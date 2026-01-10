@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stddef.h>
+#include <string.h>
 #include "gup/types.h"
 #include "gup/trace.h"
 #include "gup/codegen.h"
@@ -45,15 +46,20 @@ static int
 cg_compile_assign(struct gup_state *state, struct ast_node *node)
 {
     struct ast_node *cur;
+    char buf[256];
 
     cur = node;
+    memset(buf, 0, sizeof(buf));
+
     while ((cur = cur->left) != NULL) {
-        printf("%s", cur->str);
+        strncat(buf, cur->str, sizeof(buf) - 1);
         if (cur->left != NULL) {
-            printf(".");
+            strncat(buf, ".", sizeof(buf) - 1);
         }
     }
-    printf(" = %zu\n", node->right->v);
+
+    cur = node->right;
+    mu_cg_setlabel(state, GUP_TYPE_U8, buf, cur->v);
     return 0;
 }
 

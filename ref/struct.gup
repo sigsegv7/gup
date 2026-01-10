@@ -6,3 +6,12 @@ struct var {
 }
 
 struct var foo;
+
+pub fn main -> u32
+{
+    foo.foo = 1;
+    foo.bar = 2;
+    foo.long = 3;
+    foo.quad = 4;
+    return 0;
+}
