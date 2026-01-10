@@ -355,6 +355,14 @@ lexer_scan(struct gup_state *state, struct token *res)
 
         res->type = TT_GTE;
         return 0;
+    case '(':
+        res->type = TT_LPAREN;
+        res->c = c;
+        return 0;
+    case ')':
+        res->type = TT_RPAREN;
+        res->c = c;
+        return 0;
     case ';':
         res->type = TT_SEMI;
         res->c = c;
