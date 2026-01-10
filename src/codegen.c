@@ -5,10 +5,28 @@
 
 #include <errno.h>
 #include <stddef.h>
+#include "gup/types.h"
 #include "gup/trace.h"
 #include "gup/codegen.h"
 #include "gup/symbol.h"
 #include "gup/mu.h"
+
+static inline regsize_t
+dtype_to_regsize(gup_type_t type)
+{
+    switch (type) {
+    case GUP_TYPE_U8:
+        return MACH_REGSIZE_8;
+    case GUP_TYPE_U16:
+        return MACH_REGSIZE_16;
+    case GUP_TYPE_U32:
+        return MACH_REGSIZE_32;
+    case GUP_TYPE_U64:
+        return MACH_REGSIZE_64;
+    default:
+        return MACH_REGSIZE_BAD;
+    }
+}
 
 int
 cg_compile_node(struct gup_state *state, struct ast_node *node)
@@ -40,7 +58,10 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         mu_cg_retvoid(state);
         break;
     case AST_OP_RETIMM:
-        mu_cg_retimm(state, MACH_REGSIZE_64, node->v);
+        if ((symbol = state->this_func) == NULL) {
+            return -1;
+        }
+        mu_cg_retimm(state, dtype_to_regsize(symbol->data_type), node->v);
         break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);

@@ -13,6 +13,7 @@
  * Valid machine register sizes
  */
 typedef enum {
+    MACH_REGSIZE_BAD,
     MACH_REGSIZE_8,
     MACH_REGSIZE_16,
     MACH_REGSIZE_32,
