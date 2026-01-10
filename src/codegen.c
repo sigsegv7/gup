@@ -37,6 +37,9 @@ cg_compile_node(struct gup_state *state, struct ast_node *node)
         }
         mu_cg_asm(state, node->str);
         break;
+    case AST_OP_RETVOID:
+        mu_cg_retvoid(state);
+        break;
     default:
         trace_error(state, "[AST]: bad node type %d\n", node->type);
         return -1;

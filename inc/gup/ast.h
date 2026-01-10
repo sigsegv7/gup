@@ -21,7 +21,8 @@
 typedef enum {
     AST_OP_NONE,
     AST_OP_FUNC,
-    AST_OP_ASM
+    AST_OP_ASM,
+    AST_OP_RETVOID
 } ast_op_t;
 
 /*

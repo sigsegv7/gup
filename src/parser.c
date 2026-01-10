@@ -235,6 +235,8 @@ parse_asm(struct gup_state *state, struct token *tok)
 static int
 begin_parse(struct gup_state *state, struct token *tok)
 {
+    struct ast_node *root;
+
     if (state == NULL || tok == NULL) {
         errno = -EINVAL;
         return -1;
@@ -260,6 +262,12 @@ begin_parse(struct gup_state *state, struct token *tok)
         }
 
         state->this_func = NULL;
+        if (ast_node_alloc(state, AST_OP_RETVOID, &root) < 0) {
+            trace_warn("[PARSER] retvoid failure\n");
+            return -1;
+        }
+
+        cg_compile_node(state, root);
         break;
     default:
         break;

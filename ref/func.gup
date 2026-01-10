@@ -1,6 +1,4 @@
 pub fn main -> u8
 {
     __asm("nop");
-    __asm("mov rax, 0");
-    __asm("ret");
 }
