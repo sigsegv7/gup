@@ -302,7 +302,6 @@ parse_struct(struct gup_state *state, struct token *tok)
     switch (tok->type) {
     case TT_SEMI:
         symbol = symbol_from_name(&state->g_symtab, struct_name);
-        printf("%s\n", struct_name);
         if (symbol == NULL) {
             return -1;
         }
