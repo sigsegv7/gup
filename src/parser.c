@@ -357,7 +357,7 @@ parse_struct(struct gup_state *state, struct token *tok)
             &state->g_symtab,
             instance_name,
             SYMBOL_TYPE_STRUCT,
-            &symbol
+            NULL
         );
 
         if (sym_id < 0) {
