@@ -308,8 +308,11 @@ static int
 parse_struct(struct gup_state *state, struct token *tok)
 {
     struct symbol *symbol;
+    struct ast_node *sfield = NULL;
+    struct symbol *instance = NULL;
     struct ast_node *root, *cur;
     symid_t sym_id;
+    ast_op_t ast_op;
     gup_type_t type;
     char *struct_name;
     char *instance_name = "none";
@@ -395,23 +398,40 @@ parse_struct(struct gup_state *state, struct token *tok)
 
     cur = root;
     while (lexer_scan(state, tok) == 0) {
+        ast_op = AST_OP_VAR;
+        type = GUP_TYPE_VOID;
+
         if (tok->type == TT_RBRACE) {
             scope_pop(state);
             break;
         }
 
-        type = token_to_type(tok->type);
-        if (type == GUP_TYPE_BAD) {
-            trace_error(
-                state,
-                "expected type, got %s\n",
-                toktab[tok->type]
-            );
+        switch (tok->type) {
+        case TT_STRUCT:
+            ast_op = AST_OP_STRUCT;
+            if (parse_expect(state, tok, TT_IDENT) < 0)
+                return -1;
 
-            return -1;
+            instance = symbol_from_name(&state->g_symtab, tok->s);
+            if (instance == NULL)
+                return -1;
+
+            sfield = instance->tree;
+            break;
+        default:
+            type = token_to_type(tok->type);
+            if (type == GUP_TYPE_BAD) {
+                trace_error(
+                    state,
+                    "expected type, got %s\n",
+                    toktab[tok->type]
+                );
+                return -1;
+            }
+            break;
         }
 
-        if (ast_node_alloc(state, AST_OP_VAR, &cur->right) < 0) {
+        if (ast_node_alloc(state, ast_op, &cur->right) < 0) {
             return -1;
         }
 
@@ -422,6 +442,7 @@ parse_struct(struct gup_state *state, struct token *tok)
         cur = cur->right;
         cur->data_type = type;
         cur->str = ptrbox_strdup(&state->ptrbox, tok->s);
+        cur->left = sfield;
 
         if (parse_expect(state, tok, TT_SEMI) < 0) {
             return -1;

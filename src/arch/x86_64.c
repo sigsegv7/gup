@@ -188,6 +188,16 @@ mu_cg_struct(struct gup_state *state, const char *name, struct ast_node *node)
             node = node->right;
             continue;
         }
+
+        /* Is this a structure field? */
+        if (node->type == AST_OP_STRUCT) {
+            if (mu_cg_struct(state, name, node->left) < 0)
+                return -1;
+
+            node = node->right;
+            continue;
+        }
+
         if (node->data_type < GUP_TYPE_MAX) {
             fprintf(
                 state->out_fp,
